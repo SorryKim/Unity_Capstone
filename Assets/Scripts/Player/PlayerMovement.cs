@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody2D rigid;
     SpriteRenderer spriter;
+    Animator anim;
 
     // Awake : 시작할때 한번만 실행
     // Update : 하나의 프레임마다 한번씩 호출되는 생명주기 함수
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -37,9 +39,10 @@ public class PlayerMovement : MonoBehaviour
 
     void LateUpdate()
     {
+        anim.SetFloat("speed", inputVec.magnitude);
         if (inputVec.x != 0)
         {
-            spriter.flipX = inputVec.x < 0;
+            spriter.flipX = inputVec.x > 0;
         }
     }
 }
