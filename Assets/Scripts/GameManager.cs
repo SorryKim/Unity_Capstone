@@ -5,18 +5,35 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    public Text msgList;
-    public InputField inputMsg;
-    public Text playerCount;
-    
+    public GameObject m_Content;
+    public InputField m_inputField;
+
+    Text playerCount;
+    PhotonView photonview;
+
+    GameObject m_ContentText;
+
+    string m_strUserName;
     void Start()
     {
         CreatePlayer();
         PhotonNetwork.IsMessageQueueRunning = true;
-        Invoke("CheckPlayerCount", 0.5f);
+        PhotonNetwork.ConnectUsingSettings();
+        m_ContentText = m_Content.transform.GetChild(0).gameObject;
+        photonview = GetComponent<PhotonView>();
+        //Invoke("CheckPlayerCount", 0.5f);
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Return) && !m_inputField.isFocused)
+        {
+            m_inputField.ActivateInputField();
+        }
     }
 
     void CreatePlayer()
@@ -24,53 +41,47 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate("Player", new Vector3(0f, 0f, 0f), Quaternion.identity);
     }
 
-    public void OnSendChatMsg()
+    public override void OnConnectedToMaster()
     {
-        string msg = string.Format("[{0}] {1}", PhotonNetwork.LocalPlayer.NickName, inputMsg.text);
-        photonView.RPC("ReceiveMsg", RpcTarget.OthersBuffered, msg);
-        ReceiveMsg(msg);
+        RoomOptions options = new RoomOptions();
+        options.MaxPlayers = 10;
 
-        inputMsg.text = "";
-        inputMsg.ActivateInputField();
+        int n_key = Random.Range(0, 100);
+
+        m_strUserName = "user" + n_key;
+
+        PhotonNetwork.LocalPlayer.NickName = m_strUserName;
+        PhotonNetwork.JoinOrCreateRoom("Room1", options, null);
+    }
+    public void OnEndEditEvent()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            string strMessage = m_strUserName + " : " + m_inputField.text;
+
+            photonView.RPC("RPC_Chat", RpcTarget.All, strMessage);
+            m_inputField.text = "";
+        }
+    }
+    public void AddChatMessage(string msg)
+    {
+        GameObject goText = Instantiate(m_ContentText, m_Content.transform);
+
+        goText.GetComponent<Text>().text = msg;
+        m_Content.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+    }
+
+    public override void OnJoinedRoom()
+    {
+        AddChatMessage(PhotonNetwork.LocalPlayer.NickName + "¥‘ ¿‘¿Â!");
     }
 
     [PunRPC]
-    void ReceiveMsg(string msg)
+    void RPC_Chat(string msg)
     {
-        msgList.text += "\n" + msg;
+        AddChatMessage(msg);
     }
 
-    public void OnExitClick()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
-
-    public override void OnLeftRoom()
-    {
-        SceneManager.LoadScene("Lobby");
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        string msg = string.Format("\n<color=#00ff00>[{0}]¥‘¿Ã ¿‘¿Â«ﬂΩ¿¥œ¥Ÿ.</color>"
-                                    , newPlayer.NickName);
-        ReceiveMsg(msg);
-    }
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        CheckPlayerCount();
-
-        string msg = string.Format("\n<color=#ff0000>[{0}]¥‘¿Ã ≈¿Â«ﬂΩ¿¥œ¥Ÿ.</color>"
-                                    , otherPlayer.NickName);
-
-        //photonView.RPC("ReceiveMsg", RpcTarget.Others, msg);
-        ReceiveMsg(msg);
-    }
-    void CheckPlayerCount()
-    {
-        int currPlayer = PhotonNetwork.PlayerList.Length;
-        int maxPlayer = PhotonNetwork.CurrentRoom.MaxPlayers;
-        playerCount.text = string.Format("[{0}/{1}]", currPlayer, maxPlayer);
-    }
+ 
+   
 }
