@@ -4,17 +4,19 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public Text msgList;
     public InputField inputMsg;
-
+    public Text playerCount;
     
     void Start()
     {
         CreatePlayer();
         PhotonNetwork.IsMessageQueueRunning = true;
+        Invoke("CheckPlayerCount", 0.5f);
     }
 
     void CreatePlayer()
@@ -27,6 +29,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         string msg = string.Format("[{0}] {1}", PhotonNetwork.LocalPlayer.NickName, inputMsg.text);
         photonView.RPC("ReceiveMsg", RpcTarget.OthersBuffered, msg);
         ReceiveMsg(msg);
+
+        inputMsg.text = "";
+        inputMsg.ActivateInputField();
     }
 
     [PunRPC]
@@ -35,8 +40,37 @@ public class GameManager : MonoBehaviourPunCallbacks
         msgList.text += "\n" + msg;
     }
 
-    void Update()
+    public void OnExitClick()
     {
-        
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene("Lobby");
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        string msg = string.Format("\n<color=#00ff00>[{0}]님이 입장했습니다.</color>"
+                                    , newPlayer.NickName);
+        ReceiveMsg(msg);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        CheckPlayerCount();
+
+        string msg = string.Format("\n<color=#ff0000>[{0}]님이 퇴장했습니다.</color>"
+                                    , otherPlayer.NickName);
+
+        //photonView.RPC("ReceiveMsg", RpcTarget.Others, msg);
+        ReceiveMsg(msg);
+    }
+    void CheckPlayerCount()
+    {
+        int currPlayer = PhotonNetwork.PlayerList.Length;
+        int maxPlayer = PhotonNetwork.CurrentRoom.MaxPlayers;
+        playerCount.text = string.Format("[{0}/{1}]", currPlayer, maxPlayer);
     }
 }
