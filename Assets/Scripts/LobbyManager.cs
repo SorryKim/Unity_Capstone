@@ -3,85 +3,88 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
 
     private string gameVersion = "1"; // 게임버젼
 
-    public Text connectionInfoText; // 네트워크 정보 텍스트
-    public Button joinButton; // 참여 버튼
+    int playerCnt = 4; // 플레이어 수 설정
+    string nickname = "", roomname = "";
+    public GameObject startUI, nicknamePanel, createPanel, createRoomPanel;
+    public TMP_InputField nicknameInput, roomNameInput;
+    public TMP_Text playerCntText;
 
-    // 게임 실행과 동시에 마스터 서버 접속 시도
-    public void Start()
+
+    // StartPanel에서 start버튼을 누르는 경우
+    public void ClickStartButton()
     {
-        // 접속에 필요한 게임 버젼 설정
-        PhotonNetwork.GameVersion = gameVersion;
-        // 설정한 정보로 마스터 서버 접속 시도
-        PhotonNetwork.ConnectUsingSettings();
-
-        // 접속 버튼 비활성화
-        joinButton.interactable = false;
-        connectionInfoText.text = "Master Server에 접속 시도중...";
+        startUI.SetActive(false);
+        nicknamePanel.SetActive(true);
     }
 
-    // 마스터 서버 접속 성공 시 실행
-    public override void OnConnectedToMaster()
+    // NicknamePanel에서 next 버튼을 누르는 경우
+    public void ClickNextButtonNickname()
     {
-        // 룸 접속 버튼 활성화
-        joinButton.interactable = true;
-
-        // 성공 텍스트 안내
-        connectionInfoText.text = "Online: Master Server와 연결됨";
+        nickname = nicknameInput.text;
+        Debug.Log(nickname);
+        nicknamePanel.SetActive(false);
+        createPanel.SetActive(true);
     }
 
-    // 실패할 경우 실행
-    public override void OnDisconnected(DisconnectCause cause)
+    // NicknamePanel에서 back 버튼을 누르는 경우
+    public void ClickBackButtonNickname()
     {
-        // 룸 접속 버튼 비활성화
-        joinButton.interactable = false;
-        // 접속 시도중 텍스트 안내
-        connectionInfoText.text = "Offline: Master Sever와 접속 시도중....";
-
-        // 마스터 서버로의 재접속 시도
-        PhotonNetwork.ConnectUsingSettings();
+        nicknamePanel.SetActive(false);
+        startUI.SetActive(true);
     }
 
-    // 게임 룸 접속
-    public void Connect()
+    // CreatePanel에서 방만들기 버튼을 누르는 경우
+    public void ClickCreateButtonCreatePanel()
     {
-        // 중복 접속 방지, 버튼 비활성화
-        joinButton.interactable = false;
-
-        if (PhotonNetwork.IsConnected)
-        {
-            connectionInfoText.text = "룸에 접속 시도";
-            PhotonNetwork.ConnectUsingSettings();
-        }
-        else
-        {
-            
-            // 마스터 서버에 접속시도
-            connectionInfoText.text = "Offline: Master Sever와 접속 시도중....";
-            PhotonNetwork.ConnectUsingSettings();
-        }
+        createPanel.SetActive(false);
+        createRoomPanel.SetActive(true);
     }
 
-
-    // 랜덤 룸 참가 실패한 경우 실행
-    public override void OnJoinRandomFailed(short returnCode, string message)
+    // CreatePanel에서 방만들기 버튼을 누르는 경우
+    public void ClickBackButtonCreatePanel()
     {
-        // 상태 표시
-        connectionInfoText.text = "No room. 새로운 방 생성";
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 8 });
+        createPanel.SetActive(false);
+        createRoomPanel.SetActive(true);
     }
 
-    // 룸에 참가 완료된 경우 자동 실행
-    public override void OnJoinedRoom()
+    public void ClickAddNum()
     {
-        connectionInfoText.text = "방 참가 성공!";
-        PhotonNetwork.LoadLevel("Main");
+        playerCnt++;
+        playerCntText.text = playerCnt.ToString();
     }
+
+    public void ClickMinusNum()
+    {
+        playerCnt--;
+        playerCntText.text = playerCnt.ToString();
+    }
+
+    // CreateRoomPanel에서 next 버튼을 누르는 경우
+    public void ClickNextButtonCreateRoomPanel()
+    {
+        roomname = roomNameInput.text;
+        Debug.Log(roomname);
+        SceneManager.LoadScene("Main");
+    }
+
+    // CreateRoomPanel에서 back버튼을 누르는 경우
+    public void ClickBackButtonCreateRoomPanel()
+    {
+
+        createRoomPanel.SetActive(false);
+        createPanel.SetActive(true);
+
+    }
+
 }
