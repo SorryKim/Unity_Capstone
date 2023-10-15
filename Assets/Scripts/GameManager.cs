@@ -7,81 +7,41 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager : MonoBehaviour
 {
-    public GameObject m_Content;
-    public InputField m_inputField;
+    public static GameManager instance = null;
+    public bool isConnect = false;
+    public string nickname = "";
 
-    Text playerCount;
-    PhotonView photonview;
+    private void Awake()
+    {
+        
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else if(instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
-    GameObject m_ContentText;
-
-    string m_strUserName;
-    void Start()
+    private void Start()
     {
         CreatePlayer();
-        PhotonNetwork.IsMessageQueueRunning = true;
-        PhotonNetwork.ConnectUsingSettings();
-        m_ContentText = m_Content.transform.GetChild(0).gameObject;
-        photonview = GetComponent<PhotonView>();
-        //Invoke("CheckPlayerCount", 0.5f);
+
+        Debug.Log("방이름 :" + PhotonNetwork.CurrentRoom.Name);
+        Debug.Log("최대인원수" + PhotonNetwork.CurrentRoom.MaxPlayers.ToString());
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Return) && !m_inputField.isFocused)
-        {
-            m_inputField.ActivateInputField();
-        }
+        
     }
 
     void CreatePlayer()
     {
-        PhotonNetwork.Instantiate("Player", new Vector3(0f, 0f, 0f), Quaternion.identity);
+        GameObject temp = PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
     }
-
-    public override void OnConnectedToMaster()
-    {
-        RoomOptions options = new RoomOptions();
-        options.MaxPlayers = 10;
-
-        int n_key = Random.Range(0, 100);
-
-        m_strUserName = "user" + n_key;
-
-        PhotonNetwork.LocalPlayer.NickName = m_strUserName;
-        PhotonNetwork.JoinOrCreateRoom("Room1", options, null);
-    }
-    public void OnEndEditEvent()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            string strMessage = m_strUserName + " : " + m_inputField.text;
-
-            photonView.RPC("RPC_Chat", RpcTarget.All, strMessage);
-            m_inputField.text = "";
-        }
-    }
-    public void AddChatMessage(string msg)
-    {
-        GameObject goText = Instantiate(m_ContentText, m_Content.transform);
-
-        goText.GetComponent<Text>().text = msg;
-        m_Content.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
-    }
-
-    public override void OnJoinedRoom()
-    {
-        AddChatMessage(PhotonNetwork.LocalPlayer.NickName + "님 입장!");
-    }
-
-    [PunRPC]
-    void RPC_Chat(string msg)
-    {
-        AddChatMessage(msg);
-    }
-
- 
-   
 }

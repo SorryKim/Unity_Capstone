@@ -1,15 +1,18 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     public Vector2 inputVec;
     public float speed; //속도 관리
-
+    public TMP_Text nickname;
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
+    private PhotonView pv;
 
     // Awake : 시작할때 한번만 실행
     // Update : 하나의 프레임마다 한번씩 호출되는 생명주기 함수
@@ -21,6 +24,12 @@ public class PlayerMovement : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        pv = GetComponent<PhotonView>();
+    }
+
+    private void Start()
+    {
+        nickname.text = PlayerPrefs.GetString("nickname");
     }
 
     void Update()

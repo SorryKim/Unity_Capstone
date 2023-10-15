@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -16,10 +17,123 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     int playerCnt = 4; // 플레이어 수 설정
     string nickname = "", roomname = "";
-    public GameObject startUI, nicknamePanel, createPanel, createRoomPanel;
+    public GameObject startUI, nicknamePanel, createPanel, createRoomPanel, roomListPanel;
     public TMP_InputField nicknameInput, roomNameInput;
     public TMP_Text playerCntText;
 
+    // 룸 목록을 저장할 딕셔너리
+    public Dictionary<string, GameObject> roomDict = new Dictionary<string, GameObject>();
+    // 룸을 표시할 프리팹
+    public GameObject roomPrefab;
+    // Room 프리팹이 차일드로 될 부모
+    public Transform scrollContent;
+
+    private void Awake()
+    {
+        // 방장이 씬 로딩하면, 나머지 인원 싱크
+        PhotonNetwork.AutomaticallySyncScene = true;
+
+        // 게임버젼 지정
+        PhotonNetwork.GameVersion = gameVersion;
+
+        // 서버 접속
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
+
+    private void Start()
+    {
+       
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("포톤 서버에 접속");
+
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        Debug.Log("02. 로비에 접속");
+    }
+
+    // CreateRoomPanel에서 next 버튼을 누르는 경우
+    public void ClickNextButtonCreateRoomPanel()
+    {
+
+        roomname = roomNameInput.text;
+        RoomOptions roomOption = new RoomOptions();
+        roomOption.IsOpen = true;
+        roomOption.IsVisible = true;
+        roomOption.MaxPlayers = playerCnt;
+
+        PhotonNetwork.CreateRoom(roomname, roomOption);
+
+    }
+
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("방 입장완료");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel("Main");
+        }
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        Debug.Log(message);
+
+        RoomOptions ro = new RoomOptions();
+        ro.IsOpen = true;
+        ro.IsVisible = true;
+        ro.MaxPlayers = 5;
+
+        PhotonNetwork.CreateRoom("room1", ro);
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        GameObject tempRoom = null;
+        foreach (var room in roomList)
+        {
+            // 방이 삭제된 경우
+            if (room.RemovedFromList)
+            {
+                roomDict.TryGetValue(room.Name, out tempRoom);
+                Destroy(tempRoom);
+                roomDict.Remove(room.Name);
+            }
+            // 룸 정보가 갱신된 경우
+            else
+            {
+                // 룸이 처음 생성된 경우
+                if (!roomDict.ContainsKey(room.Name))
+                {
+                    GameObject _room = Instantiate(roomPrefab, scrollContent);
+                    _room.GetComponent<RoomData>().RoomInfo = room;
+                    roomDict.Add(room.Name, _room);
+                }
+                else
+                {
+                    roomDict.TryGetValue(room.Name, out tempRoom);
+                    tempRoom.GetComponent<RoomData>().RoomInfo = room; 
+                }
+            }
+        }
+    }
+
+   
+
+    // CreateRoomPanel에서 back버튼을 누르는 경우
+    public void ClickBackButtonCreateRoomPanel()
+    {
+
+        createRoomPanel.SetActive(false);
+        createPanel.SetActive(true);
+
+    }
 
     // StartPanel에서 start버튼을 누르는 경우
     public void ClickStartButton()
@@ -32,7 +146,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void ClickNextButtonNickname()
     {
         nickname = nicknameInput.text;
+        PhotonNetwork.NickName = nickname;
+        PlayerPrefs.SetString("nickname", nickname);
         Debug.Log(nickname);
+       
         nicknamePanel.SetActive(false);
         createPanel.SetActive(true);
     }
@@ -51,40 +168,46 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         createRoomPanel.SetActive(true);
     }
 
-    // CreatePanel에서 방만들기 버튼을 누르는 경우
+    // CreatePanel에서 방찾기버튼을 누르는 경우
+    public void ClickSearchButtonCreatePanel()
+    {
+        createPanel.SetActive(false);
+        roomListPanel.SetActive(true);
+    }
+
+    // CreatePanel에서 뒤로가기 버튼을 누르는 경우
     public void ClickBackButtonCreatePanel()
     {
         createPanel.SetActive(false);
         createRoomPanel.SetActive(true);
     }
 
+    // RoomListPanel에서 뒤로가기 버튼을 누르는 경우
+    public void ClickBackButtonRoomListPanel()
+    {
+        roomListPanel.SetActive(false);
+        createPanel.SetActive(true);
+    }
+
+
     public void ClickAddNum()
     {
-        playerCnt++;
-        playerCntText.text = playerCnt.ToString();
+        if (playerCnt < 10)
+        {
+            playerCnt++;
+            playerCntText.text = playerCnt.ToString();
+        }
     }
 
     public void ClickMinusNum()
     {
-        playerCnt--;
-        playerCntText.text = playerCnt.ToString();
+        if (playerCnt >= 2)
+        {
+            playerCnt--;
+            playerCntText.text = playerCnt.ToString();
+        }
     }
 
-    // CreateRoomPanel에서 next 버튼을 누르는 경우
-    public void ClickNextButtonCreateRoomPanel()
-    {
-        roomname = roomNameInput.text;
-        Debug.Log(roomname);
-        SceneManager.LoadScene("Main");
-    }
-
-    // CreateRoomPanel에서 back버튼을 누르는 경우
-    public void ClickBackButtonCreateRoomPanel()
-    {
-
-        createRoomPanel.SetActive(false);
-        createPanel.SetActive(true);
-
-    }
+    
 
 }
