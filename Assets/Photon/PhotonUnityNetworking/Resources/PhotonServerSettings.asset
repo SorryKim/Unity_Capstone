@@ -43,6 +43,7 @@ MonoBehaviour:
   - RPC_Chat
   - FlipXRPC
   - CreatePlayer
+  - ChatRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
