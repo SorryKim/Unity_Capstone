@@ -13,30 +13,30 @@ using System.Threading;
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
 
-    private string gameVersion = "1"; // °ÔÀÓ¹öÁ¯
+    private string gameVersion = "1"; // ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½
 
-    int playerCnt = 4; // ÇÃ·¹ÀÌ¾î ¼ö ¼³Á¤
+    int playerCnt = 4; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     string nickname = "", roomname = "";
-    public GameObject startUI, nicknamePanel, createPanel, createRoomPanel, roomListPanel;
+    public GameObject startUI, nicknamePanel, createPanel, createRoomPanel, roomListPanel, manualPanel;
     public TMP_InputField nicknameInput, roomNameInput;
     public TMP_Text playerCntText;
 
-    // ·ë ¸ñ·ÏÀ» ÀúÀåÇÒ µñ¼Å³Ê¸®
+    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³Ê¸ï¿½
     public Dictionary<string, GameObject> roomDict = new Dictionary<string, GameObject>();
-    // ·ëÀ» Ç¥½ÃÇÒ ÇÁ¸®ÆÕ
+    // ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public GameObject roomPrefab;
-    // Room ÇÁ¸®ÆÕÀÌ Â÷ÀÏµå·Î µÉ ºÎ¸ð
+    // Room ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ïµï¿½ï¿½ ï¿½ï¿½ ï¿½Î¸ï¿½
     public Transform scrollContent;
 
     private void Awake()
     {
-        // ¹æÀåÀÌ ¾À ·ÎµùÇÏ¸é, ³ª¸ÓÁö ÀÎ¿ø ½ÌÅ©
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ï¸ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½ ï¿½ï¿½Å©
         PhotonNetwork.AutomaticallySyncScene = true;
 
-        // °ÔÀÓ¹öÁ¯ ÁöÁ¤
+        // ï¿½ï¿½ï¿½Ó¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         PhotonNetwork.GameVersion = gameVersion;
 
-        // ¼­¹ö Á¢¼Ó
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -48,17 +48,17 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Æ÷Åæ ¼­¹ö¿¡ Á¢¼Ó");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedLobby()
     {
-        Debug.Log("02. ·Îºñ¿¡ Á¢¼Ó");
+        Debug.Log("02. ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½");
     }
 
-    // CreateRoomPanel¿¡¼­ next ¹öÆ°À» ´©¸£´Â °æ¿ì
+    // CreateRoomPanelï¿½ï¿½ï¿½ï¿½ next ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickNextButtonCreateRoomPanel()
     {
 
@@ -74,7 +74,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("¹æ ÀÔÀå¿Ï·á");
+        Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï·ï¿½");
         PhotonNetwork.LoadLevel("Main");
         
     }
@@ -96,7 +96,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         GameObject tempRoom = null;
         foreach (var room in roomList)
         {
-            // ¹æÀÌ »èÁ¦µÈ °æ¿ì
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             if (room.RemovedFromList)
             {
                 
@@ -104,18 +104,18 @@ public class LobbyManager : MonoBehaviourPunCallbacks
                 Destroy(tempRoom);
                 roomDict.Remove(room.Name);
             }
-            // ·ë Á¤º¸°¡ °»½ÅµÈ °æ¿ì
+            // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Åµï¿½ ï¿½ï¿½ï¿½
             else
             {
-                // ·ëÀÌ Ã³À½ »ý¼ºµÈ °æ¿ì
+                // ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
                 if (!roomDict.ContainsKey(room.Name))
                 {
                     GameObject _room = Instantiate(roomPrefab, scrollContent);
                     _room.GetComponent<RoomData>().roomInfo = room;
                     roomDict.Add(room.Name, _room);
-                    Debug.Log("·ë ¸®½ºÆ®");
-                    Debug.Log("·ëÀÌ¸§: " + room.Name);
-                    Debug.Log("·ë ÀÎ¿ø: " + room.PlayerCount);
+                    Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®");
+                    Debug.Log("ï¿½ï¿½ï¿½Ì¸ï¿½: " + room.Name);
+                    Debug.Log("ï¿½ï¿½ ï¿½Î¿ï¿½: " + room.PlayerCount);
                 }
                 else
                 {
@@ -128,7 +128,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
    
 
-    // CreateRoomPanel¿¡¼­ back¹öÆ°À» ´©¸£´Â °æ¿ì
+    // CreateRoomPanelï¿½ï¿½ï¿½ï¿½ backï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickBackButtonCreateRoomPanel()
     {
 
@@ -137,14 +137,14 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     }
 
-    // StartPanel¿¡¼­ start¹öÆ°À» ´©¸£´Â °æ¿ì
+    // StartPanelï¿½ï¿½ï¿½ï¿½ startï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickStartButton()
     {
         startUI.SetActive(false);
         nicknamePanel.SetActive(true);
     }
 
-    // NicknamePanel¿¡¼­ next ¹öÆ°À» ´©¸£´Â °æ¿ì
+    // NicknamePanelï¿½ï¿½ï¿½ï¿½ next ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickNextButtonNickname()
     {
         nickname = nicknameInput.text;
@@ -156,41 +156,54 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         createPanel.SetActive(true);
     }
 
-    // NicknamePanel¿¡¼­ back ¹öÆ°À» ´©¸£´Â °æ¿ì
+    // NicknamePanelï¿½ï¿½ï¿½ï¿½ back ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickBackButtonNickname()
     {
         nicknamePanel.SetActive(false);
         startUI.SetActive(true);
     }
 
-    // CreatePanel¿¡¼­ ¹æ¸¸µé±â ¹öÆ°À» ´©¸£´Â °æ¿ì
+    // CreatePanelï¿½ï¿½ï¿½ï¿½ ï¿½æ¸¸ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickCreateButtonCreatePanel()
     {
         createPanel.SetActive(false);
         createRoomPanel.SetActive(true);
     }
 
-    // CreatePanel¿¡¼­ ¹æÃ£±â¹öÆ°À» ´©¸£´Â °æ¿ì
+    // CreatePanelï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã£ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickSearchButtonCreatePanel()
     {
         createPanel.SetActive(false);
         roomListPanel.SetActive(true);
     }
 
-    // CreatePanel¿¡¼­ µÚ·Î°¡±â ¹öÆ°À» ´©¸£´Â °æ¿ì
+    // ManualPanelï¿½ï¿½ï¿½ï¿½ ï¿½Ú·Î°ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    public void ClickManualButtonCreatePanel()
+    {
+        createPanel.SetActive(false);
+        manualPanel.SetActive(true);
+    }
+
+    // CreatePanelï¿½ï¿½ï¿½ï¿½ ï¿½Ú·Î°ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickBackButtonCreatePanel()
     {
         createPanel.SetActive(false);
         createRoomPanel.SetActive(true);
     }
 
-    // RoomListPanel¿¡¼­ µÚ·Î°¡±â ¹öÆ°À» ´©¸£´Â °æ¿ì
+    // RoomListPanelï¿½ï¿½ï¿½ï¿½ ï¿½Ú·Î°ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public void ClickBackButtonRoomListPanel()
     {
         roomListPanel.SetActive(false);
         createPanel.SetActive(true);
     }
 
+    // ManualPanelï¿½ï¿½ï¿½ï¿½ ï¿½Ú·Î°ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    public void ClickBackButtonManualPanel()
+    {
+        manualPanel.SetActive(false);
+        createPanel.SetActive(true);
+    }
 
     public void ClickAddNum()
     {
