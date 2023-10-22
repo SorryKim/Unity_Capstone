@@ -30,24 +30,37 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        nickname.text = PlayerPrefs.GetString("nickname");
+        nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
       
 
     }
 
 
-    void FixedUpdate()
+    void Update()
     {
         if (pv.IsMine)
         {
             inputVec.x = Input.GetAxisRaw("Horizontal");
             inputVec.y = Input.GetAxisRaw("Vertical");
-            Vector2 nextVec = inputVec.normalized * speed * Time.fixedDeltaTime;
+
             //inputVec.normalized : 벡터 값의 크기가 1이 되도록 좌표가 수정된 값
             //Time.fixedDeltaTime : 물리 프레임 하나가 소비한 시간
-            rigid.MovePosition(rigid.position + nextVec);
+            rigid.velocity = new Vector2(3 * inputVec.x, 3 * inputVec.y);
 
-            if (inputVec.x != 0) pv.RPC("FlipXRPC", RpcTarget.AllBuffered, inputVec.x);
+            if (inputVec.x != 0)
+            {
+                pv.RPC("FlipXRPC", RpcTarget.AllBuffered, inputVec.x);
+            }
+
+            if (rigid.velocity != Vector2.zero)
+            {
+                anim.SetBool("walk", true);
+            }
+            else
+            {
+                anim.SetBool("walk", false);
+            }
+
         }
     }
 
