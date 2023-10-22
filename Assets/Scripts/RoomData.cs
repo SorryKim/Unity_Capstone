@@ -8,11 +8,11 @@ using UnityEngine.UI;
 
 public class RoomData : MonoBehaviour
 {
-    private Text RoomInfoText;
+    private Text roomInfoText;
     private RoomInfo _roomInfo;
 
 
-    public RoomInfo RoomInfo
+    public RoomInfo roomInfo
     {
         get
         {
@@ -20,16 +20,26 @@ public class RoomData : MonoBehaviour
         }
         set
         {
+            Debug.Log("·ëÁ¤º¸ ³Ñ¾î¿È");
             _roomInfo = value;
-            RoomInfoText.text = $"{_roomInfo.Name} ({_roomInfo.PlayerCount} / {_roomInfo.MaxPlayers})";
-            GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => OnEnterRoom(_roomInfo.Name));
+            GetComponent<Button>().onClick.AddListener(() => OnEnterRoom(_roomInfo.Name));
         }
+       
     }
 
     private void Awake()
     {
-        RoomInfoText = GetComponentInChildren<Text>();
+        roomInfoText = GetComponentInChildren<Text>();
+        
+    }
 
+    private void Start()
+    {
+        roomInfoText.text = $"{_roomInfo.Name } ( {_roomInfo.PlayerCount} / {_roomInfo.MaxPlayers} )";
+    }
+    private void Update()
+    {
+       
     }
 
     public void OnEnterRoom(string roomName)

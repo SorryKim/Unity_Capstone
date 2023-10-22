@@ -75,10 +75,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("방 입장완료");
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.LoadLevel("Main");
-        }
+        PhotonNetwork.LoadLevel("Main");
+        
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -101,6 +99,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             // 방이 삭제된 경우
             if (room.RemovedFromList)
             {
+                
                 roomDict.TryGetValue(room.Name, out tempRoom);
                 Destroy(tempRoom);
                 roomDict.Remove(room.Name);
@@ -112,13 +111,16 @@ public class LobbyManager : MonoBehaviourPunCallbacks
                 if (!roomDict.ContainsKey(room.Name))
                 {
                     GameObject _room = Instantiate(roomPrefab, scrollContent);
-                    _room.GetComponent<RoomData>().RoomInfo = room;
+                    _room.GetComponent<RoomData>().roomInfo = room;
                     roomDict.Add(room.Name, _room);
+                    Debug.Log("룸 리스트");
+                    Debug.Log("룸이름: " + room.Name);
+                    Debug.Log("룸 인원: " + room.PlayerCount);
                 }
                 else
                 {
                     roomDict.TryGetValue(room.Name, out tempRoom);
-                    tempRoom.GetComponent<RoomData>().RoomInfo = room; 
+                    tempRoom.GetComponent<RoomData>().roomInfo = room; 
                 }
             }
         }

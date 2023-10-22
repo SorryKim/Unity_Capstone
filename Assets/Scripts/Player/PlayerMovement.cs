@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -30,28 +31,31 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         nickname.text = PlayerPrefs.GetString("nickname");
+      
+
     }
 
-    void Update()
-    {
-        inputVec.x = Input.GetAxisRaw("Horizontal");
-        inputVec.y = Input.GetAxisRaw("Vertical");
-    }
 
     void FixedUpdate()
     {
-        Vector2 nextVec = inputVec.normalized * speed * Time.fixedDeltaTime;
-        //inputVec.normalized : 벡터 값의 크기가 1이 되도록 좌표가 수정된 값
-        //Time.fixedDeltaTime : 물리 프레임 하나가 소비한 시간
-        rigid.MovePosition(rigid.position + nextVec);
-    }
-
-    void LateUpdate()
-    {
-        anim.SetFloat("speed", inputVec.magnitude);
-        if (inputVec.x != 0)
+        if (pv.IsMine)
         {
-            spriter.flipX = inputVec.x > 0;
+            inputVec.x = Input.GetAxisRaw("Horizontal");
+            inputVec.y = Input.GetAxisRaw("Vertical");
+            Vector2 nextVec = inputVec.normalized * speed * Time.fixedDeltaTime;
+            //inputVec.normalized : 벡터 값의 크기가 1이 되도록 좌표가 수정된 값
+            //Time.fixedDeltaTime : 물리 프레임 하나가 소비한 시간
+            rigid.MovePosition(rigid.position + nextVec);
+
+            if (inputVec.x != 0) pv.RPC("FlipXRPC", RpcTarget.AllBuffered, inputVec.x);
         }
     }
+
+    [PunRPC]
+    void FlipXRPC(float axis)
+    {
+        spriter.flipX = inputVec.x == 1;
+    }
+
+   
 }
