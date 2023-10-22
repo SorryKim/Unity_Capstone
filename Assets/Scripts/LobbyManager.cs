@@ -76,7 +76,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("방 입장완료");
         PhotonNetwork.LoadLevel("Main");
-        
+       
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -113,9 +113,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
                     GameObject _room = Instantiate(roomPrefab, scrollContent);
                     _room.GetComponent<RoomData>().roomInfo = room;
                     roomDict.Add(room.Name, _room);
-                    Debug.Log("룸 리스트");
-                    Debug.Log("룸이름: " + room.Name);
-                    Debug.Log("룸 인원: " + room.PlayerCount);
+                    
                 }
                 else
                 {

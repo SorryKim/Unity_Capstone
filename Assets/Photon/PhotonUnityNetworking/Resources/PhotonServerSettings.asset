@@ -42,6 +42,7 @@ MonoBehaviour:
   - ReceiveMsg
   - RPC_Chat
   - FlipXRPC
+  - CreatePlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

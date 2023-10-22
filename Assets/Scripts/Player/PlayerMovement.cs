@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Animations;
+using Cinemachine;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -30,8 +31,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+
+        // 닉네임 설정
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
-      
+
+        // 카메라 설정
+        if (pv.IsMine)
+        {
+            var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
+            cm.Follow = transform;
+            cm.LookAt = transform;
+        }
 
     }
 
@@ -62,13 +72,15 @@ public class PlayerMovement : MonoBehaviour
             }
 
         }
+        
     }
 
     [PunRPC]
     void FlipXRPC(float axis)
     {
-        spriter.flipX = inputVec.x == 1;
+        spriter.flipX = axis == 1;
     }
+
 
    
 }
