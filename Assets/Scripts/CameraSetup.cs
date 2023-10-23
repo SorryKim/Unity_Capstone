@@ -10,14 +10,14 @@ public class CameraSetup : MonoBehaviourPun
     void Start()
     {
 
-        // ÀÚ½ÅÀÌ ·ÎÄÃ ÇÃ·¹ÀÌ¾îÀÎ °æ¿ì
+        // ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         if (photonView.IsMine)
         {
 
-            // ÇØ´ç ¾À¿¡ Á¸ÀçÇÏ´Â ½Ã³×¸Ó½Å °¡»ó Ä«¸Þ¶ó Ã£±â
+            // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã³×¸Ó½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ Ã£ï¿½ï¿½
             CinemachineVirtualCamera followCam = FindObjectOfType<CinemachineVirtualCamera>();
 
-            // °¡»ó Ä«¸Þ¶óÀÇ ÃßÀû ´ë»óÀ» ÀÚ½ÅÀÇ À§Ä¡·Î º¯°æ
+            // ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             followCam.Follow = transform;
             followCam.LookAt = transform;
         }   

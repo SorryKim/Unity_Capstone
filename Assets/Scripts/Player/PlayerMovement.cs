@@ -32,10 +32,10 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
 
-        // ´Ð³×ÀÓ ¼³Á¤
+        // ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
 
-        // Ä«¸Þ¶ó ¼³Á¤
+        // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (pv.IsMine)
         {
             var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
