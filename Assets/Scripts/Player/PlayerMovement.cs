@@ -9,17 +9,17 @@ using Cinemachine;
 public class PlayerMovement : MonoBehaviour
 {
     public Vector2 inputVec;
-    public float speed; //¼Óµµ °ü¸®
+    public float speed; //ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
     public TMP_Text nickname;
     Rigidbody2D rigid;
     SpriteRenderer spriter;
     Animator anim;
     private PhotonView pv;
 
-    // Awake : ½ÃÀÛÇÒ¶§ ÇÑ¹ø¸¸ ½ÇÇà
-    // Update : ÇÏ³ªÀÇ ÇÁ·¹ÀÓ¸¶´Ù ÇÑ¹ø¾¿ È£ÃâµÇ´Â »ý¸íÁÖ±â ÇÔ¼ö
-    // FixedUpdate : ¹°¸®¿¬»ê ÇÁ·¹ÀÓ¸¶´Ù È£Ãâ
-    // LateIpdate : ÇÁ·¹ÀÓÀÌ Á¾·áµÇ±â Àü ½ÇÇàµÇ´Â »ý¸íÁÖ±â ÇÔ¼ö
+    // Awake : ï¿½ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    // Update : ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ ï¿½Ô¼ï¿½
+    // FixedUpdate : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+    // LateIpdate : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç±ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ ï¿½Ô¼ï¿½
 
     void Awake()
     {
@@ -32,10 +32,10 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
 
-        // ´Ð³×ÀÓ ¼³Á¤
+        // ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
 
-        // Ä«¸Þ¶ó ¼³Á¤
+        // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (pv.IsMine)
         {
             var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
@@ -53,8 +53,8 @@ public class PlayerMovement : MonoBehaviour
             inputVec.x = Input.GetAxisRaw("Horizontal");
             inputVec.y = Input.GetAxisRaw("Vertical");
 
-            //inputVec.normalized : º¤ÅÍ °ªÀÇ Å©±â°¡ 1ÀÌ µÇµµ·Ï ÁÂÇ¥°¡ ¼öÁ¤µÈ °ª
-            //Time.fixedDeltaTime : ¹°¸® ÇÁ·¹ÀÓ ÇÏ³ª°¡ ¼ÒºñÇÑ ½Ã°£
+            //inputVec.normalized : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å©ï¿½â°¡ 1ï¿½ï¿½ ï¿½Çµï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+            //Time.fixedDeltaTime : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½Òºï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
             rigid.velocity = new Vector2(3 * inputVec.x, 3 * inputVec.y);
 
             if (inputVec.x != 0)
