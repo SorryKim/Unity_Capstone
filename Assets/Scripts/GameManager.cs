@@ -56,7 +56,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         RoomRenewal();
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "¥‘¿Ã ≈¿Â«œºÃΩ¿¥œ¥Ÿ</color>");
+    }
 
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.Disconnect();
+        PhotonNetwork.LoadLevel("Lobby");
     }
 
     void RoomRenewal()
@@ -65,6 +70,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         
     }
 
+   
     
     #endregion
 

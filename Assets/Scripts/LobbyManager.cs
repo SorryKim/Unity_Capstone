@@ -36,14 +36,15 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         // 게임버젼 지정
         PhotonNetwork.GameVersion = gameVersion;
 
-        // 서버 접속
-        PhotonNetwork.ConnectUsingSettings();
+        
+
     }
 
 
     private void Start()
     {
-
+        // 서버 접속
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
@@ -138,6 +139,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // StartPanel에서 start버튼을 누르는 경우
     public void ClickStartButton()
     {
+        
         startUI.SetActive(false);
         nicknamePanel.SetActive(true);
     }
