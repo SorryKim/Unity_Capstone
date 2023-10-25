@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         RoomRenewal();
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "¥‘¿Ã ≈¿Â«œºÃΩ¿¥œ¥Ÿ</color>");
-        PhotonNetwork.LoadLevel("Lobby");
 
     }
 
