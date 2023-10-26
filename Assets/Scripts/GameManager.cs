@@ -32,7 +32,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
+        if(roomInfo != null)
+            roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
     }
 
     #region 방
@@ -60,9 +61,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        PhotonNetwork.Disconnect();
+
+        PhotonNetwork.JoinLobby();
         PhotonNetwork.LoadLevel("Lobby");
     }
+
+   
 
     void RoomRenewal()
     {
