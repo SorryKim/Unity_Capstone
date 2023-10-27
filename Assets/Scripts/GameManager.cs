@@ -6,6 +6,12 @@ using Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Photon.Pun.Demo.Cockpit;
+using System.Linq;
+using System.Runtime.InteropServices;
+using UnityEngine.Windows;
+using System;
+using System.Threading.Tasks;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -15,10 +21,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public InputField chatInput;
     public Text roomInfo;
-    public Text[] chatText;
+    public Text[] chatText, userList;
 
     private PhotonView pv;
 
+  
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
@@ -28,13 +35,17 @@ public class GameManager : MonoBehaviourPunCallbacks
     { 
         if(PhotonNetwork.CurrentRoom.PlayerCount <=1 )
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
+
+        RoomRenewal();
     }
 
     private void Update()
-    {
-        if(roomInfo != null)
-            roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
+    { 
+            
+
     }
+
+
 
     #region 방
 
@@ -59,10 +70,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
     }
 
+    
     public override void OnLeftRoom()
     {
-
-        PhotonNetwork.JoinLobby();
+     
+        PhotonNetwork.Disconnect();
         PhotonNetwork.LoadLevel("Lobby");
     }
 
@@ -71,16 +83,41 @@ public class GameManager : MonoBehaviourPunCallbacks
     void RoomRenewal()
     {
         roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
-        
+        var players = PhotonNetwork.CurrentRoom.Players;
+
+        foreach (var temp in userList)
+        {
+            temp.text = "";
+        }
+
+        foreach (var player in players)
+        {
+            int idx = player.Key - 1;
+
+            if (idx < 8)
+            {
+                if (player.Value.IsMasterClient)
+                    userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
+                else
+                    userList[idx].text = player.Value.NickName;
+            }
+            else
+            {
+                foreach(var temp in userList) { 
+                    if(temp.text == "")
+                    {
+                        temp.text = player.Value.NickName;
+                    }
+                }
+            }
+
+            
+        }
     }
 
    
     
     #endregion
-
-
-
-
 
     #region 채팅
     public void Send()
