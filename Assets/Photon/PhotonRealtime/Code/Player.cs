@@ -133,6 +133,8 @@ namespace Photon.Realtime
         /// </remarks>
         /// <see cref="SetCustomProperties"/>
         public Hashtable CustomProperties { get; set; }
+        public string Score { get; set; }
+        public string ScoreCnt { get; set; }
 
         /// <summary>Can be used to store a reference that's useful to know "by player".</summary>
         /// <remarks>Example: Set a player's character as Tag by assigning the GameObject on Instantiate.</remarks>

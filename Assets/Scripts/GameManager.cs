@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 
 
-    #region ��
+    #region 방
 
     public override void OnJoinedRoom()
     {
@@ -61,13 +61,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         RoomRenewal();
-        ChatRPC("<color=yellow>" + newPlayer.NickName + "���� �����ϼ̽��ϴ�</color>");
+        ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>");
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         RoomRenewal();
-        ChatRPC("<color=yellow>" + otherPlayer.NickName + "���� �����ϼ̽��ϴ�</color>");
+        ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
     }
 
     
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-        roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "�� / " + PhotonNetwork.CurrentRoom.MaxPlayers + "��";
+        roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
         var players = PhotonNetwork.CurrentRoom.Players;
 
         foreach (var temp in userList)
@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (idx < 8)
             {
                 if (player.Value.IsMasterClient)
-                    userList[idx].text = "<color=green>[����]" + player.Value.NickName + "</color>";
+                    userList[idx].text = "<color=green>[방장]" + player.Value.NickName+ "</color>";
                 else
                     userList[idx].text = player.Value.NickName;
             }

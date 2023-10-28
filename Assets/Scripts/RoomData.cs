@@ -20,7 +20,7 @@ public class RoomData : MonoBehaviour
         }
         set
         {
-            Debug.Log("╥Ка╓╨╦ Ёя╬Н©х");
+            Debug.Log("О©╫О©╫О©╫О©╫О©╫О©╫ О©╫я╬О©╫О©╫");
             _roomInfo = value;
             GetComponent<Button>().onClick.AddListener(() => OnEnterRoom(_roomInfo.Name));
         }
