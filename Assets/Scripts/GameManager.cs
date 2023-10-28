@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 
 
-    #region ¹æ
+    #region ë°©
 
     public override void OnJoinedRoom()
     {
@@ -61,13 +61,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         RoomRenewal();
-        ChatRPC("<color=yellow>" + newPlayer.NickName + "´ÔÀÌ Âü°¡ÇÏ¼Ì½À´Ï´Ù</color>");
+        ChatRPC("<color=yellow>" + newPlayer.NickName + "ë‹˜ì´ ì°¸ê°€í•˜ì…¨ìŠµë‹ˆë‹¤</color>");
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         RoomRenewal();
-        ChatRPC("<color=yellow>" + otherPlayer.NickName + "´ÔÀÌ ÅğÀåÇÏ¼Ì½À´Ï´Ù</color>");
+        ChatRPC("<color=yellow>" + otherPlayer.NickName + "ë‹˜ì´ í‡´ì¥í•˜ì…¨ìŠµë‹ˆë‹¤</color>");
     }
 
     
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-        roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "¸í / " + PhotonNetwork.CurrentRoom.MaxPlayers + "¸í";
+        roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "ëª… / " + PhotonNetwork.CurrentRoom.MaxPlayers + "ëª…";
         var players = PhotonNetwork.CurrentRoom.Players;
 
         foreach (var temp in userList)
@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (idx < 8)
             {
                 if (player.Value.IsMasterClient)
-                    userList[idx].text = "<color=green>[¹æÀå]" + player.Value.NickName + "</color>";
+                    userList[idx].text = "<color=green>[ë°©ì¥]" + player.Value.NickName+ "</color>";
                 else
                     userList[idx].text = player.Value.NickName;
             }
@@ -119,14 +119,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     
     #endregion
 
-    #region Ã¤ÆÃ
+    #region Ã¤ï¿½ï¿½
     public void Send()
     {
         pv.RPC("ChatRPC", RpcTarget.All, (PhotonNetwork.NickName + " : " + chatInput.text));
         chatInput.text = "";
     }
 
-    [PunRPC] // RPC´Â ÇÃ·¹ÀÌ¾î°¡ ¼ÓÇØÀÖ´Â ¹æ ¸ğµç ÀÎ¿ø¿¡°Ô Àü´ŞÇÑ´Ù
+    [PunRPC] // RPCï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
     void ChatRPC(string msg)
     {
         bool isInput = false;
@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 chatText[i].text = msg;
                 break;
             }
-        if (!isInput) // ²ËÂ÷¸é ÇÑÄ­¾¿ À§·Î ¿Ã¸²
+        if (!isInput) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½
         {
             for (int i = 1; i < chatText.Length; i++) chatText[i - 1].text = chatText[i].text;
             chatText[chatText.Length - 1].text = msg;

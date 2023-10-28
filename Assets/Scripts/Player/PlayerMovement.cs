@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-
+        DontDestroyOnLoad(this.gameObject);
         // �г��� ����
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
 
