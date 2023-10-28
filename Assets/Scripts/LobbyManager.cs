@@ -16,10 +16,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private string gameVersion = "1"; // 게임버젼
 
     int playerCnt = 4; // 플레이어 수 설정
+    int score = 1; // 점수 설정
+    int speakCnt = 1; // 발언 횟수 설정
     string nickname = "", roomname = "";
     public GameObject startUI, nicknamePanel, createPanel, createRoomPanel, roomListPanel, manualPanel;
     public TMP_InputField nicknameInput, roomNameInput;
-    public TMP_Text playerCntText;
+    public TMP_Text playerCntText, scoreText, speakCntText;
 
     // 룸 목록을 저장할 딕셔너리
     public Dictionary<string, GameObject> roomDict = new Dictionary<string, GameObject>();
@@ -205,7 +207,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void ClickAddNum()
     {
-        if (playerCnt < 10)
+        if (playerCnt < 8)
         {
             playerCnt++;
             playerCntText.text = playerCnt.ToString();
@@ -214,13 +216,47 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void ClickMinusNum()
     {
-        if (playerCnt >= 2)
+        if (playerCnt > 4)
         {
             playerCnt--;
             playerCntText.text = playerCnt.ToString();
         }
     }
 
+    public void ClickAddScore()
+    {
+        if (score < 5)
+        {
+            score++;
+            scoreText.text = score.ToString();
+        }
+    }
 
+    public void ClickMinusScore()
+    {
+        if (score > 1)
+        {
+            score--;
+            scoreText.text = score.ToString();
+        }
+    }
+
+    public void ClickAddSpeak()
+    {
+        if (speakCnt < 3)
+        {
+            speakCnt++;
+            speakCntText.text = speakCnt.ToString();
+        }
+    }
+
+    public void ClickMinusSpeak()
+    {
+        if (speakCnt > 1)
+        {
+            speakCnt--;
+            speakCntText.text = speakCnt.ToString();
+        }
+    }
 
 }
