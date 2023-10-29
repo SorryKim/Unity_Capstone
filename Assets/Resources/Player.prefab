@@ -191,6 +191,15 @@ MonoBehaviour:
   inputVec: {x: 0, y: 0}
   speed: 3
   nickname: {fileID: 6620758827286725203}
+  animCon:
+  - {fileID: 22100000, guid: 4459184f3c3999745b905cd22d08e208, type: 2}
+  - {fileID: 22100000, guid: dee0324f2cb6a664684c200981d7b27b, type: 2}
+  - {fileID: 22100000, guid: 5316dc850bd14a447a2a47a4be0a57e3, type: 2}
+  - {fileID: 22100000, guid: 7d57c1eaf05db9244a40447fdca750ec, type: 2}
+  - {fileID: 22100000, guid: d3bd854221dfc17489370ae2b5b1e866, type: 2}
+  - {fileID: 22100000, guid: 847a5a640f9c3f349b2e862f257a4a73, type: 2}
+  - {fileID: 22100000, guid: 2b6122cd016c77847a9090b81314a683, type: 2}
+  - {fileID: 22100000, guid: 7f3503ae5752d3d4296abd53311214e7, type: 2}
 --- !u!114 &6427781577271181266
 MonoBehaviour:
   m_ObjectHideFlags: 0

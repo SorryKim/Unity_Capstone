@@ -12,6 +12,8 @@ using System.Runtime.InteropServices;
 using UnityEngine.Windows;
 using System;
 using System.Threading.Tasks;
+using Unity.Mathematics;
+using Random = System.Random;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public InputField chatInput;
     public Text roomInfo;
     public Text[] chatText, userList;
+    public Text GameStart;
 
     private PhotonView pv;
 
@@ -31,10 +34,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         pv = GetComponent<PhotonView>();
     }
 
-    private void Start()
-    { 
+    void Start()
+    {
         if(PhotonNetwork.CurrentRoom.PlayerCount <=1 )
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
+        GameStart.GetComponent<Text>().text = "Game Start";
 
         RoomRenewal();
     }
@@ -54,6 +58,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
         RoomRenewal();
         chatInput.text = "";
+        GameStart.GetComponent<Text>().text = "Ready";
         for (int i = 0; i < chatText.Length; i++) 
             chatText[i].text = "";
     }
@@ -97,9 +102,11 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (idx < 8)
             {
                 if (player.Value.IsMasterClient)
-                    userList[idx].text = "<color=green>[방장]" + player.Value.NickName+ "</color>";
+                    userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
+                
                 else
                     userList[idx].text = player.Value.NickName;
+                
             }
             else
             {
