@@ -132,7 +132,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     
     #endregion
 
-    #region ä��
+    #region 채팅
     public void Send()
     {
         pv.RPC("ChatRPC", RpcTarget.All, (PhotonNetwork.NickName + " : " + chatInput.text));
