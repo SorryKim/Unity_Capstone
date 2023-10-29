@@ -23,6 +23,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public TMP_InputField nicknameInput, roomNameInput;
     public TMP_Text playerCntText, scoreText, speakCntText;
 
+
+
     // 룸 목록을 저장할 딕셔너리
     public Dictionary<string, GameObject> roomDict = new Dictionary<string, GameObject>();
     // 룸을 표시할 프리팹
@@ -64,7 +66,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // CreateRoomPanel에서 next 버튼을 누르는 경우
     public void ClickNextButtonCreateRoomPanel()
     {
-
         roomname = roomNameInput.text;
         RoomOptions roomOption = new RoomOptions();
         roomOption.IsOpen = true;

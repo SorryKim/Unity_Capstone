@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     SpriteRenderer spriter;
     Animator anim;
     private PhotonView pv;
+    public RuntimeAnimatorController[] animCon;
 
     // Awake : �����Ҷ� �ѹ��� ����
     // Update : �ϳ��� �����Ӹ��� �ѹ��� ȣ��Ǵ� �����ֱ� �Լ�
@@ -26,11 +27,17 @@ public class PlayerMovement : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-        pv = GetComponent<PhotonView>();
-    }
+        pv = GetComponent<PhotonView>();    }
+    //void OnEnable()
+    //{
+    //    anim.runtimeAnimatorController = animCon[GameManager.instance.playerId];
+    //}
 
     private void Start()
     {
+
+        anim.runtimeAnimatorController = animCon[GameManager.instance.playerId];
+
         DontDestroyOnLoad(this.gameObject);
         // �г��� ����
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;

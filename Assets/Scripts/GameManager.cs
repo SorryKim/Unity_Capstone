@@ -12,6 +12,8 @@ using System.Runtime.InteropServices;
 using UnityEngine.Windows;
 using System;
 using System.Threading.Tasks;
+using Unity.Mathematics;
+using Random = System.Random;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -25,14 +27,19 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private PhotonView pv;
 
+    public int playerId;
+
   
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
     }
 
-    private void Start()
-    { 
+    void Start()
+    {
+        Random random = new Random();
+        playerId = random.Next(7);
+
         if(PhotonNetwork.CurrentRoom.PlayerCount <=1 )
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
 
