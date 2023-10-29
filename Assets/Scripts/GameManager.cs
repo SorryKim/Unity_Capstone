@@ -36,9 +36,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        if(PhotonNetwork.CurrentRoom.PlayerCount <=1 )
+        if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
-        GameStart.GetComponent<Text>().text = "Game Start";
 
         RoomRenewal();
     }
@@ -102,12 +101,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (idx < 8)
             {
                 if (player.Value.IsMasterClient)
+                {
                     userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
-                
+                    GameStart.GetComponent<Text>().text = "Game Start";
+                }
+
+
                 else
+                {
                     userList[idx].text = player.Value.NickName;
-                
-            }
+                    GameStart.GetComponent<Text>().text = "Ready";
+                }
+
+             }
             else
             {
                 foreach(var temp in userList) { 
