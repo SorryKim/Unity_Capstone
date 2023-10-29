@@ -35,8 +35,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-
-        anim.runtimeAnimatorController = animCon[GameManager.instance.playerId];
+        int playerId = Random.Range(0, animCon.Length);
+        anim.runtimeAnimatorController = animCon[playerId];
 
         DontDestroyOnLoad(this.gameObject);
         // �г��� ����
