@@ -39,6 +39,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
 
+        // 현재 로컬유저의 Player 변수
+        Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
+        
+        if (currentPlayer.IsMasterClient)
+        {
+            GameStart.text = "GameStart";
+        }
+        else
+        {
+            GameStart.text = "Ready";
+        }
+        
         RoomRenewal();
     }
 
@@ -55,9 +67,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
+        
         RoomRenewal();
         chatInput.text = "";
-        GameStart.GetComponent<Text>().text = "Ready";
+
         for (int i = 0; i < chatText.Length; i++) 
             chatText[i].text = "";
     }
@@ -103,14 +116,13 @@ public class GameManager : MonoBehaviourPunCallbacks
                 if (player.Value.IsMasterClient)
                 {
                     userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
-                    GameStart.GetComponent<Text>().text = "Game Start";
+                   
+                    
                 }
-
-
                 else
                 {
                     userList[idx].text = player.Value.NickName;
-                    GameStart.GetComponent<Text>().text = "Ready";
+                   
                 }
 
              }
@@ -128,7 +140,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-   
+   public void checkId()
+    {
+        var list = PhotonNetwork.CurrentRoom.Players;
+
+        foreach(var player in list)
+        {
+            Debug.Log("번호: " + player.Key.ToString() + " 닉네임: " + player.Value.NickName);
+        }
+    }
     
     #endregion
 
