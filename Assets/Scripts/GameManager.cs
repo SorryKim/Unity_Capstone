@@ -40,16 +40,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
 
         // 현재 로컬유저의 Player 변수
-        Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
         
-        if (currentPlayer.IsMasterClient)
-        {
-            GameStart.text = "GameStart";
-        }
-        else
-        {
-            GameStart.text = "Ready";
-        }
         
         RoomRenewal();
     }
@@ -99,6 +90,17 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
+
+        Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
+
+        if (currentPlayer.IsMasterClient)
+        {
+            GameStart.text = "GameStart";
+        }
+        else
+        {
+            GameStart.text = "Ready";
+        }
         roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
         var players = PhotonNetwork.CurrentRoom.Players;
 
