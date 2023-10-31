@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Animations;
 using Cinemachine;
+using Photon.Pun.UtilityScripts;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -35,11 +36,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        int playerId = Random.Range(0, animCon.Length);
-        anim.runtimeAnimatorController = animCon[playerId];
+       
 
-        DontDestroyOnLoad(this.gameObject);
-        // �г��� ����
+      
+        // 닉네임 설정
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
 
         // ī�޶� ����
@@ -48,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
             var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
             cm.Follow = transform;
             cm.LookAt = transform;
+
+       
         }
 
     }
