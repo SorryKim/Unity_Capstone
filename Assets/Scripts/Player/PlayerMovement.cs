@@ -51,6 +51,8 @@ public class PlayerMovement : MonoBehaviour
             var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
             cm.Follow = transform;
             cm.LookAt = transform;
+
+       
         }
 
     }
