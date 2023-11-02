@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Animations;
 using Cinemachine;
-using Photon.Pun.UtilityScripts;
+using JetBrains.Annotations;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,7 +16,9 @@ public class PlayerMovement : MonoBehaviour
     SpriteRenderer spriter;
     Animator anim;
     private PhotonView pv;
+    private bool isVote;
     public RuntimeAnimatorController[] animCon;
+    public Transform teleportTarget;
 
     // Awake : �����Ҷ� �ѹ��� ����
     // Update : �ϳ��� �����Ӹ��� �ѹ��� ȣ��Ǵ� �����ֱ� �Լ�
@@ -36,10 +38,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-       
-
-      
-        // 닉네임 설정
+        int playerId = Random.Range(0, animCon.Length);
+        anim.runtimeAnimatorController = animCon[playerId];
+        isVote = false;
+        DontDestroyOnLoad(this.gameObject);
+        // �г��� ����
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
 
         // ī�޶� ����
@@ -54,6 +57,42 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+
+
+    // 순간이동 실행
+    public void Teleport()
+    {
+        // 현재 플레이어가 로컬 플레이어인지 확인
+        if (!isVote && Input.GetKeyDown(KeyCode.Escape))
+        {
+            // 캐릭터의 위치와 회전을 순간이동할 위치로 설정
+            Debug.Log("순간이동");
+            transform.position = new Vector3(-25,0,0);
+           
+
+            // 위치 및 회전 정보를 다른 플레이어에게 동기화
+            pv.RPC("SyncTeleport", RpcTarget.Others, new Vector3(-25, 0, 0));
+            isVote = !isVote;
+        }
+        else if (isVote && Input.GetKeyDown(KeyCode.Escape))
+        {
+            // 캐릭터의 위치와 회전을 순간이동할 위치로 설정
+            Debug.Log("순간이동");
+            transform.position = new Vector3(0, 0, 0);
+
+
+            // 위치 및 회전 정보를 다른 플레이어에게 동기화
+            pv.RPC("SyncTeleport", RpcTarget.Others, new Vector3(0, 0, 0));
+            isVote = !isVote;
+        }
+    }
+
+    // RPC를 통해 순간이동 정보를 다른 플레이어에게 전달
+    [PunRPC]
+    void SyncTeleport(Vector3 position)
+    {
+        transform.position = position;
+    }
 
     void Update()
     {
@@ -79,6 +118,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 anim.SetBool("walk", false);
             }
+
+            Teleport();
 
         }
         

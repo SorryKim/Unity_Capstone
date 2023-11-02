@@ -8,14 +8,8 @@ using Photon.Pun.UtilityScripts;
 public class PlayerData : MonoBehaviour
 {
 
-    // ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ »ç¿ëÇÒ º¯¼ö
-   
-    public RuntimeAnimatorController[] animCon;
-
-    private Animator anim;
-    private PhotonView pv;
-
-    private int playerColorNum;
+    // í”Œë ˆì´ì–´ ë°ì´í„° ì‚¬ìš©í•  ë³€ìˆ˜
+    private int score, colorNum;
 
     // Start is called before the first frame update
     void Start()
