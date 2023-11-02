@@ -14,15 +14,7 @@ public class PlayerData : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        pv = GetComponent<PhotonView>();
-        if (pv.IsMine)
-        {
-            int temp = PhotonNetwork.CurrentRoom.PlayerCount;
-            PhotonNetwork.LocalPlayer.SetPlayerNumber(temp);
-            playerColorNum = PhotonNetwork.LocalPlayer.GetPlayerNumber();
-            anim.runtimeAnimatorController = animCon[playerColorNum];
-        }
+ 
     }
 
 

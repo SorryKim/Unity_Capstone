@@ -3,14 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Animations;
 using Cinemachine;
 using JetBrains.Annotations;
 
-public class PlayerMovement : MonoBehaviour
+
+
+
+public class PlayerMovement : MonoBehaviourPun, IPunInstantiateMagicCallback
 {
     public Vector2 inputVec;
-    public float speed; //�ӵ� ����
+    public float speed;
     public TMP_Text nickname;
     Rigidbody2D rigid;
     SpriteRenderer spriter;
@@ -20,17 +24,32 @@ public class PlayerMovement : MonoBehaviour
     public RuntimeAnimatorController[] animCon;
     public Transform teleportTarget;
 
-    // Awake : �����Ҷ� �ѹ��� ����
-    // Update : �ϳ��� �����Ӹ��� �ѹ��� ȣ��Ǵ� �����ֱ� �Լ�
-    // FixedUpdate : �������� �����Ӹ��� ȣ��
-    // LateIpdate : �������� ����Ǳ� �� ����Ǵ� �����ֱ� �Լ�
+
+    // 플레이어의 색깔번호
+    [SerializeField] int colorNum;
+    public int ColorNum { get => colorNum; set => ActionRPC(nameof(SetColorNum), value); }
+    [PunRPC] void SetColorNum(int value) => colorNum = value;
+
+    void ActionRPC(string functionName, object value)
+    {
+        pv.RPC(functionName, RpcTarget.AllBufferedViaServer, value);
+    }
+
+    public void InvokeProperties()
+    {
+        ColorNum = ColorNum;
+    }
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-        pv = GetComponent<PhotonView>();    }
+        pv = GetComponent<PhotonView>(); 
+    }
+
+    
+
     //void OnEnable()
     //{
     //    anim.runtimeAnimatorController = animCon[GameManager.instance.playerId];
@@ -38,26 +57,30 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        int playerId = Random.Range(0, animCon.Length);
-        anim.runtimeAnimatorController = animCon[playerId];
+        
         isVote = false;
         DontDestroyOnLoad(this.gameObject);
-        // �г��� ����
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
+        ColorNum = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
-        // ī�޶� ����
         if (pv.IsMine)
         {
             var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
             cm.Follow = transform;
             cm.LookAt = transform;
-
-       
+            
+            anim.runtimeAnimatorController = animCon[ColorNum];
         }
+
+        
 
     }
 
 
+    public void OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        info.Sender.TagObject = gameObject;
+    }
 
     // 순간이동 실행
     public void Teleport()
@@ -101,8 +124,6 @@ public class PlayerMovement : MonoBehaviour
             inputVec.x = Input.GetAxisRaw("Horizontal");
             inputVec.y = Input.GetAxisRaw("Vertical");
 
-            //inputVec.normalized : ���� ���� ũ�Ⱑ 1�� �ǵ��� ��ǥ�� ������ ��
-            //Time.fixedDeltaTime : ���� ������ �ϳ��� �Һ��� �ð�
             rigid.velocity = new Vector2(3 * inputVec.x, 3 * inputVec.y);
 
             if (inputVec.x != 0)

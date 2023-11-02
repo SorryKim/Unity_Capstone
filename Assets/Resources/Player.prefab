@@ -202,6 +202,7 @@ MonoBehaviour:
   - {fileID: 22100000, guid: 2b6122cd016c77847a9090b81314a683, type: 2}
   - {fileID: 22100000, guid: 7f3503ae5752d3d4296abd53311214e7, type: 2}
   teleportTarget: {fileID: 0}
+  colorNum: 0
 --- !u!114 &6427781577271181266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,15 +276,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e3a0558fb4ac9941ad132b0ee224529, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animCon:
-  - {fileID: 22100000, guid: 4459184f3c3999745b905cd22d08e208, type: 2}
-  - {fileID: 22100000, guid: 5316dc850bd14a447a2a47a4be0a57e3, type: 2}
-  - {fileID: 22100000, guid: 2b6122cd016c77847a9090b81314a683, type: 2}
-  - {fileID: 22100000, guid: 7f3503ae5752d3d4296abd53311214e7, type: 2}
-  - {fileID: 22100000, guid: dee0324f2cb6a664684c200981d7b27b, type: 2}
-  - {fileID: 22100000, guid: 7d57c1eaf05db9244a40447fdca750ec, type: 2}
-  - {fileID: 22100000, guid: 847a5a640f9c3f349b2e862f257a4a73, type: 2}
-  - {fileID: 22100000, guid: d3bd854221dfc17489370ae2b5b1e866, type: 2}
 --- !u!1 &1785290694808151762
 GameObject:
   m_ObjectHideFlags: 0

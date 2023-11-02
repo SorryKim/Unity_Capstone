@@ -72,6 +72,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         RoomRenewal();
+        //if (newPlayer != PhotonNetwork.LocalPlayer)
+        //{
+        //    ((GameObject)PhotonNetwork.LocalPlayer.TagObject).GetComponent<PlayerMovement>().InvokeProperties();
+        //}
+
         ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>");
     }
 
