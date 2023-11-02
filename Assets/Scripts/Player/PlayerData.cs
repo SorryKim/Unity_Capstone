@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerData : MonoBehaviour
 {
 
-    // ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ »ç¿ëÇÒ º¯¼ö
+    // Playerì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜
     private int score, colorNum;
 
     // Start is called before the first frame update

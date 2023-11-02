@@ -1,0 +1,14 @@
+{
+    "theme" : [
+        {
+            "name" : "food",
+            "word" : [
+                "apple",
+                "banana"
+            ]
+        },
+        {
+            "name" : "people"
+        }
+    ]   
+}
