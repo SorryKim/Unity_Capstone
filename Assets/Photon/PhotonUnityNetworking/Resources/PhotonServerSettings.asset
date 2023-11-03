@@ -50,6 +50,9 @@ MonoBehaviour:
   - SyncColor
   - SetPlayerType
   - SetColorNum
+  - setColor
+  - AllocateCharacter
+  - Character
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

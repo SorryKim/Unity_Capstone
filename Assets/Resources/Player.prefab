@@ -202,7 +202,6 @@ MonoBehaviour:
   - {fileID: 22100000, guid: 2b6122cd016c77847a9090b81314a683, type: 2}
   - {fileID: 22100000, guid: 7f3503ae5752d3d4296abd53311214e7, type: 2}
   teleportTarget: {fileID: 0}
-  colorNum: 0
 --- !u!114 &6427781577271181266
 MonoBehaviour:
   m_ObjectHideFlags: 0
