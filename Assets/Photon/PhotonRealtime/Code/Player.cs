@@ -13,11 +13,6 @@
 #if UNITY_4_7 || UNITY_5 || UNITY_5_3_OR_NEWER
 #define SUPPORTED_UNITY
 #endif
-public enum EPlayerType
-{
-    Liar,
-    Citizen
-}
 
 namespace Photon.Realtime
 {
@@ -76,12 +71,12 @@ namespace Photon.Realtime
             set { this.colorNum = value; }  
         }
 
-        private EPlayerType eplayerType;
+        private bool isLiar = false;
         // 해당캐릭터의 역할
-        public EPlayerType EplayerType
+        public bool IsLiar
         {
-            get { return this.eplayerType; }
-            set { this.eplayerType = value; }
+            get { return this.isLiar; }
+            set { this.isLiar = value; }
         }
 
         /// <summary>Background field for nickName.</summary>

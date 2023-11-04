@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 if (player.Value.IsMasterClient)
                     userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
-                else 
+                else
                     userList[idx].text = player.Value.NickName;
              }
             else
@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         chatInput.text = "";
     }
 
-    [PunRPC] // RPC�� �÷��̾ �����ִ� �� ��� �ο����� �����Ѵ�
+    [PunRPC] 
     void ChatRPC(string msg)
     {
         bool isInput = false;
@@ -168,7 +168,7 @@ public class GameManager : MonoBehaviourPunCallbacks
                 chatText[i].text = msg;
                 break;
             }
-        if (!isInput) // ������ ��ĭ�� ���� �ø�
+        if (!isInput) 
         {
             for (int i = 1; i < chatText.Length; i++) chatText[i - 1].text = chatText[i].text;
             chatText[chatText.Length - 1].text = msg;
