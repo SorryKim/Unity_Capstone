@@ -26,19 +26,19 @@ public class PlayerMovement : MonoBehaviourPun, IPunInstantiateMagicCallback
 
 
     // 플레이어의 색깔번호
-    [SerializeField] int colorNum;
-    public int ColorNum { get => colorNum; set => ActionRPC(nameof(SetColorNum), value); }
-    [PunRPC] void SetColorNum(int value) => colorNum = value;
+    //[SerializeField] int colorNum;
+    //public int ColorNum { get => colorNum; set => ActionRPC(nameof(SetColorNum), value); }
+    //[PunRPC] void SetColorNum(int value) => colorNum = value;
 
     void ActionRPC(string functionName, object value)
     {
         pv.RPC(functionName, RpcTarget.AllBufferedViaServer, value);
     }
 
-    public void InvokeProperties()
-    {
-        ColorNum = ColorNum;
-    }
+    //public void InvokeProperties()
+    //{
+    //    ColorNum = ColorNum;
+    //}
 
     void Awake()
     {
@@ -48,7 +48,24 @@ public class PlayerMovement : MonoBehaviourPun, IPunInstantiateMagicCallback
         pv = GetComponent<PhotonView>(); 
     }
 
-    
+    [PunRPC]
+    void Character(int actorNumber)
+    {
+
+        int userIndex = (actorNumber - 1) % 7; //0~7, actornumber가 8이 되면 다시 0부터
+
+        if (userIndex >= 0 && userIndex < animCon.Length)
+        {
+            // 캐릭터 할당
+            RuntimeAnimatorController selectedController = animCon[userIndex];
+            anim.runtimeAnimatorController = selectedController;
+        }
+        else
+        {
+            Debug.LogError("Invalid user index or character index.");
+        }
+    }
+
 
     //void OnEnable()
     //{
@@ -61,15 +78,15 @@ public class PlayerMovement : MonoBehaviourPun, IPunInstantiateMagicCallback
         isVote = false;
         DontDestroyOnLoad(this.gameObject);
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
-        ColorNum = PhotonNetwork.CurrentRoom.PlayerCount - 1;
+        //ColorNum = PhotonNetwork.CurrentRoom.PlayerCount - 1;
 
         if (pv.IsMine)
         {
             var cm = GameObject.Find("CMCamera").GetComponent<CinemachineVirtualCamera>();
             cm.Follow = transform;
             cm.LookAt = transform;
-            
-            anim.runtimeAnimatorController = animCon[ColorNum];
+            //캐릭터할당요청 & 서버에 전달
+            pv.RPC("Character", RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.ActorNumber);
         }
 
         
