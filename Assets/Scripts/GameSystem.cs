@@ -12,6 +12,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
 {
     public static GameSystem instance;
     public GameObject themePanel, waitPanel, liarPanel, noLiarPanel;
+    public Button startBtn;
     public Text wordText;
     public List<Player> players = new List<Player>();
     public List<Button> buttons = new List<Button>();
@@ -26,29 +27,12 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-
-    }
-
-    public void AddPlayer(Player player)
-    {
-        if (!players.Contains(player))
-            players.Add(player);
-    }
-
-    // 게임준비, 라이어 배정
-    private IEnumerator GameReady()
-    {
-        int num = PhotonNetwork.CurrentRoom.PlayerCount;
-        while (num != players.Count)
+        if (PhotonNetwork.IsMasterClient)
         {
-          
-            yield return null;
+            startBtn.gameObject.SetActive(true);
         }
-
-        int liarIndex = Random.Range(0, players.Count);
-        var liar = players[liarIndex];
-        liar.IsLiar = true;
     }
+    
 
     void SelectLiar()
     {
@@ -129,7 +113,20 @@ public class GameSystem : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.IsLiar) liarPanel.SetActive(true);
         else noLiarPanel.SetActive(true);
 
+        // 10초후의 자동으로 꺼짐
+        StartCoroutine(ExecuteAfterDelay());
+
     }
 
+    IEnumerator ExecuteAfterDelay()
+    {
+        yield return new WaitForSeconds(10);
+
+        liarPanel.SetActive(false);
+        noLiarPanel.SetActive(false);
+        
+    }
+
+   
 
 }
