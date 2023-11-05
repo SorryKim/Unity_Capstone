@@ -26,40 +26,40 @@ public class DataManager : MonoBehaviour
     public static DataManager instance;
 
     public GameSubject animal1 = new GameSubject() { subject = "동물", word = "원숭이" };
-    GameSubject animal2 = new GameSubject() { subject = "동물", word = "개미핥기" };
-    GameSubject animal3 = new GameSubject() { subject = "동물", word = "사자" };
-    GameSubject animal4 = new GameSubject() { subject = "동물", word = "판다" };
-    GameSubject animal5 = new GameSubject() { subject = "동물", word = "악어" };
+    public GameSubject animal2 = new GameSubject() { subject = "동물", word = "개미핥기" };
+    public GameSubject animal3 = new GameSubject() { subject = "동물", word = "사자" };
+    public GameSubject animal4 = new GameSubject() { subject = "동물", word = "판다" };
+    public GameSubject animal5 = new GameSubject() { subject = "동물", word = "악어" };
 
     public GameSubject food1 = new GameSubject() { subject = "음식", word = "제육볶음" };
-    GameSubject food2 = new GameSubject() { subject = "음식", word = "돈까스" };
-    GameSubject food3 = new GameSubject() { subject = "음식", word = "마라탕" };
-    GameSubject food4 = new GameSubject() { subject = "음식", word = "탕후루" };
-    GameSubject food5 = new GameSubject() { subject = "음식", word = "햄버거" };
+    public GameSubject food2 = new GameSubject() { subject = "음식", word = "돈까스" };
+    public GameSubject food3 = new GameSubject() { subject = "음식", word = "마라탕" };
+    public GameSubject food4 = new GameSubject() { subject = "음식", word = "탕후루" };
+    public GameSubject food5 = new GameSubject() { subject = "음식", word = "햄버거" };
 
     public GameSubject country1 = new GameSubject() { subject = "나라", word = "일본" };
-    GameSubject country2 = new GameSubject() { subject = "나라", word = "독일" };
-    GameSubject country3 = new GameSubject() { subject = "나라", word = "러시아" };
-    GameSubject country4 = new GameSubject() { subject = "나라", word = "룩셈부르크" };
-    GameSubject country5 = new GameSubject() { subject = "나라", word = "미얀마" };
+    public GameSubject country2 = new GameSubject() { subject = "나라", word = "독일" };
+    public GameSubject country3 = new GameSubject() { subject = "나라", word = "러시아" };
+    public GameSubject country4 = new GameSubject() { subject = "나라", word = "룩셈부르크" };
+    public GameSubject country5 = new GameSubject() { subject = "나라", word = "미얀마" };
 
     public GameSubject job1 = new GameSubject() { subject = "직업", word = "개발자" };
-    GameSubject job2 = new GameSubject() { subject = "직업", word = "의사" };
-    GameSubject job3 = new GameSubject() { subject = "직업", word = "교수" };
-    GameSubject job4 = new GameSubject() { subject = "직업", word = "은행원" };
-    GameSubject job5 = new GameSubject() { subject = "직업", word = "대통령" };
+    public GameSubject job2 = new GameSubject() { subject = "직업", word = "의사" };
+    public GameSubject job3 = new GameSubject() { subject = "직업", word = "교수" };
+    public GameSubject job4 = new GameSubject() { subject = "직업", word = "은행원" };
+    public GameSubject job5 = new GameSubject() { subject = "직업", word = "대통령" };
 
     public GameSubject celebrity1 = new GameSubject() { subject = "연예인", word = "유재석" };
-    GameSubject celebrity2 = new GameSubject() { subject = "연예인", word = "지석진" };
-    GameSubject celebrity3 = new GameSubject() { subject = "연예인", word = "김종국" };
-    GameSubject celebrity4 = new GameSubject() { subject = "연예인", word = "주우재" };
-    GameSubject celebrity5 = new GameSubject() { subject = "연예인", word = "조미연" };
+    public GameSubject celebrity2 = new GameSubject() { subject = "연예인", word = "지석진" };
+    public GameSubject celebrity3 = new GameSubject() { subject = "연예인", word = "김종국" };
+    public GameSubject celebrity4 = new GameSubject() { subject = "연예인", word = "주우재" };
+    public GameSubject celebrity5 = new GameSubject() { subject = "연예인", word = "조미연" };
 
     public GameSubject sports1 = new GameSubject() { subject = "스포츠", word = "축구" };
-    GameSubject sports2 = new GameSubject() { subject = "스포츠", word = "야구" };
-    GameSubject sports3 = new GameSubject() { subject = "스포츠", word = "배구" };
-    GameSubject sports4 = new GameSubject() { subject = "스포츠", word = "양궁" };
-    GameSubject sports5 = new GameSubject() { subject = "스포츠", word = "펜싱" };
+    public GameSubject sports2 = new GameSubject() { subject = "스포츠", word = "야구" };
+    public GameSubject sports3 = new GameSubject() { subject = "스포츠", word = "배구" };
+    public GameSubject sports4 = new GameSubject() { subject = "스포츠", word = "양궁" };
+    public GameSubject sports5 = new GameSubject() { subject = "스포츠", word = "펜싱" };
 
 
     string path;
