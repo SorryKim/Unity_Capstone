@@ -17,11 +17,12 @@ using Newtonsoft.Json;
 public class GameSystem : MonoBehaviourPunCallbacks
 {
     public static GameSystem instance;
+    public GameManager gameManager;
     public GameObject themePanel, waitPanel, liarPanel, noLiarPanel;
     public Button startBtn;
     public Text word;
-    public List<Player> players = new List<Player>();
     public List<Button> buttons = new List<Button>();
+    public List<Player> players;
     // 게임 정답
     public string answer;
     public string selectedTheme;
@@ -55,8 +56,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     }
     private void Update()
     {
-        if(players != null)
-            players = GameManager.instance.players;
+  
     }
 
     private void Start()
@@ -66,15 +66,14 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             startBtn.gameObject.SetActive(true);
         }
-
-        parseJson();
-
+        gameManager = GetComponent<GameManager>();
+        
     }
     
 
     void SelectLiar()
     {
-
+        players = gameManager.players;
         if (PhotonNetwork.IsMasterClient)
         {
             int randomIdx = Random.Range(0, players.Count);

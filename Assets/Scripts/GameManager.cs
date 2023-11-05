@@ -42,12 +42,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        var temp = PhotonNetwork.CurrentRoom.Players;
-
-        foreach (var player in temp)
-        {
-            players.Add(player.Value);
-        }
+        pv.RPC("Players_Renewal", RpcTarget.AllBuffered);
 
         if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
@@ -61,6 +56,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             
 
     }
+
+    [PunRPC]
     public void Players_Renewal()
     {
         players.Clear();
@@ -117,7 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-        Players_Renewal();
+        pv.RPC("Players_Renewal", RpcTarget.AllBuffered);
         Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
 
         if (currentPlayer.IsMasterClient)
