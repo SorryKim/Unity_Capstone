@@ -30,25 +30,24 @@ public class GameManager : MonoBehaviourPunCallbacks
     private PhotonView pv;
     public bool[] colorNum;
 
-    public List<Player> players = new List<Player>();
+    public List<Player> players;
 
 
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
         gameSystem = GetComponent<GameSystem>();
-
+        players = new List<Player>();
     }
 
     void Start()
     {
-        pv.RPC("Players_Renewal", RpcTarget.AllBuffered);
-
         if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
 
         // 현재 로컬유저의 Player 변수
         RoomRenewal();
+
     }
 
     private void Update()
@@ -57,19 +56,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-    [PunRPC]
-    public void Players_Renewal()
-    {
-        players.Clear();
-
-        var temp = PhotonNetwork.CurrentRoom.Players;
-        foreach (var player in temp)
-        {
-            players.Add(player.Value);
-        }
-
-        //players.RemoveAll(player => player == null);
-    }
 
     #region 방
 
@@ -82,18 +68,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         chatInput.text = "";
         for (int i = 0; i < chatText.Length; i++) 
             chatText[i].text = "";
+
+       
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         players.Add(newPlayer);
         RoomRenewal();
-        //if (newPlayer != PhotonNetwork.LocalPlayer)
-        //{
-        //    ((GameObject)PhotonNetwork.LocalPlayer.TagObject).GetComponent<PlayerMovement>().InvokeProperties();
-        //}
-
         ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>");
+
+     
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -114,7 +99,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-        pv.RPC("Players_Renewal", RpcTarget.AllBuffered);
         Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
 
         if (currentPlayer.IsMasterClient)
@@ -133,32 +117,15 @@ public class GameManager : MonoBehaviourPunCallbacks
             temp.text = "";
         }
         int idx = 0;
-        foreach (var player in players)
+
+        Player[] playerArr = PhotonNetwork.PlayerList;
+        foreach (var player in playerArr)
         {
             if (player.IsMasterClient)
                 userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>";
             else
                 userList[idx].text = player.NickName;
             idx++;
-
-
-            //int idx = player.Key - 1;
-            //int idx = PhotonNetwork.LocalPlayer.ActorNumber-1;
-
-            //if (idx < 8)
-            //{
-            //    if (player.Value.IsMasterClient)
-            //        userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
-            //    else
-            //        userList[idx].text = player.Value.NickName;
-            // }
-            //else
-            //{
-            //    foreach(var temp in userList) {
-            //        if(temp.text == "")
-            //            temp.text = player.Value.NickName;
-            //    }
-            //}
         }
     }
 

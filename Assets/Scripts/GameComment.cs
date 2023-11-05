@@ -9,13 +9,14 @@ using UnityEngine.UI;
 public class GameComment : MonoBehaviourPunCallbacks
 {
     GameSystem gameSystem;
+    GameManager gameManager;
     public static GameComment instance;
 
     // 발표 순서
     public List<int> commentSequence;
     public GameObject commentWaitPanel, commentPanel;
     public TMP_InputField commentInput;
-    public Text[] comments;
+    public TMP_Text[] comments;
 
     // 발표 여부
     private bool isCommentAllowed = false;
@@ -27,27 +28,24 @@ public class GameComment : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-
         gameSystem = GetComponent<GameSystem>();
-        commentInput.onEndEdit.AddListener(OnInputEndEdit);
-
+        gameManager = GetComponent<GameManager>();
+        
     }
 
 
     // 발표 순서를 정하는 메소드
     public void SetSequence()
     {
-        bool[] check = new bool[gameSystem.players.Count];
+        bool[] check = new bool[gameSystem.players.Length];
         for (int i = 0; i < check.Length; i++)
             check[i] = false;
 
         // 누구부터 시작할지
-
-        int startIdx = UnityEngine.Random.Range(0, gameSystem.players.Count);
-
+        int startIdx = UnityEngine.Random.Range(0, gameSystem.players.Length);
 
         // 시작한사람부터 차례대로
-        for (int i = startIdx; i < gameSystem.players.Count; i++)
+        for (int i = startIdx; i < gameSystem.players.Length; i++)
         {
             commentSequence.Add(i);
         }
@@ -61,27 +59,26 @@ public class GameComment : MonoBehaviourPunCallbacks
     // 발표 시작
     public void StartComment()
     {
-
-        SetSequence();
+        if(PhotonNetwork.IsMasterClient)
+            SetSequence();
         foreach (var num in commentSequence)
         {
             Player player = gameSystem.players[num];
-            Commenting(player);
+            if(player == PhotonNetwork.LocalPlayer)
+                Commenting();
         }
     }
 
     // 발표 메소드
-    void Commenting(Player player)
+    void Commenting()
     {
         // 발표자
         if (photonView.IsMine)
         {
-
             // 코멘트 인풋창 활성화
             commentPanel.SetActive(true);
-            StartInput();
-
-
+            isCommentAllowed = true;
+            
         }
         // 발표가 아닌 사람들
         else
@@ -91,33 +88,40 @@ public class GameComment : MonoBehaviourPunCallbacks
         }
     }
 
-    private void OnInputEndEdit(string inputText)
-    {
-        StopInput();
-        commentPanel.SetActive(true);
-    }
+ 
 
     private IEnumerator StartTimer()
     {
         yield return new WaitForSeconds(30);
         if (isCommentAllowed)
         {
-            StopInput();
-            // 시간 초과 처리
-            // 다음 단계로 이동하거나 다른 처리를 수행
+            Send();
         }
     }
 
-    public void StartInput()
+    public void Send()
     {
-        isCommentAllowed = true;
-        StartCoroutine(StartTimer());
+        photonView.RPC("SendComment", RpcTarget.All, (PhotonNetwork.LocalPlayer.NickName + " : " + commentInput.text));
     }
 
-    public void StopInput()
+    [PunRPC]
+    public void SendComment(string msg)
     {
         isCommentAllowed = false;
+        int idx = 0;
+        List<Player> temp = gameManager.players;
+        for(int i = 0; i < temp.Count; i++)
+        {
+            if (temp[i] == PhotonNetwork.LocalPlayer)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        comments[idx].text = msg;
         commentPanel.SetActive(false);
-        StopCoroutine(StartTimer());
     }
+
+   
 }

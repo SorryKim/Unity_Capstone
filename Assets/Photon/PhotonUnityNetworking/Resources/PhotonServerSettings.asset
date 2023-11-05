@@ -57,6 +57,9 @@ MonoBehaviour:
   - IdentifyWord
   - SelectComplete
   - Players_Renewal
+  - SetAnswer
+  - SendComment
+  - SyncPlayers
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
