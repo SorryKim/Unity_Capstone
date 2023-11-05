@@ -18,6 +18,7 @@ using Random = System.Random;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager instance = null;
+    public GameSystem gameSystem;
     public bool isConnect = false;
     public string nickname = "";
 
@@ -29,22 +30,29 @@ public class GameManager : MonoBehaviourPunCallbacks
     private PhotonView pv;
     public bool[] colorNum;
 
-  
+    public List<Player> players = new List<Player>();
+
+
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
-      
+        gameSystem = GetComponent<GameSystem>();
 
     }
 
     void Start()
     {
+        var temp = PhotonNetwork.CurrentRoom.Players;
+
+        foreach (var player in temp)
+        {
+            players.Add(player.Value);
+        }
+
         if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
             PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
 
         // 현재 로컬유저의 Player 변수
-        
-        
         RoomRenewal();
     }
 
@@ -53,8 +61,18 @@ public class GameManager : MonoBehaviourPunCallbacks
             
 
     }
+    public void Players_Renewal()
+    {
+        players.Clear();
 
+        var temp = PhotonNetwork.CurrentRoom.Players;
+        foreach (var player in temp)
+        {
+            players.Add(player.Value);
+        }
 
+        //players.RemoveAll(player => player == null);
+    }
 
     #region 방
 
@@ -71,6 +89,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        players.Add(newPlayer);
         RoomRenewal();
         //if (newPlayer != PhotonNetwork.LocalPlayer)
         //{
@@ -98,7 +117,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-
+        Players_Renewal();
         Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
 
         if (currentPlayer.IsMasterClient)
@@ -110,31 +129,39 @@ public class GameManager : MonoBehaviourPunCallbacks
             GameStart.text = "Ready";
         }
         roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
-        var players = PhotonNetwork.CurrentRoom.Players;
+        //var players = PhotonNetwork.CurrentRoom.Players;
 
         foreach (var temp in userList)
         {
             temp.text = "";
         }
-
+        int idx = 0;
         foreach (var player in players)
         {
-            int idx = player.Key - 1;
-
-            if (idx < 8)
-            {
-                if (player.Value.IsMasterClient)
-                    userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
-                else
-                    userList[idx].text = player.Value.NickName;
-             }
+            if (idx == 0)
+                userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>";
             else
-            {
-                foreach(var temp in userList) { 
-                    if(temp.text == "")
-                        temp.text = player.Value.NickName;
-                }
-            }
+                userList[idx].text = player.NickName;
+            idx++;
+
+
+            //int idx = player.Key - 1;
+            //int idx = PhotonNetwork.LocalPlayer.ActorNumber-1;
+
+            //if (idx < 8)
+            //{
+            //    if (player.Value.IsMasterClient)
+            //        userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
+            //    else
+            //        userList[idx].text = player.Value.NickName;
+            // }
+            //else
+            //{
+            //    foreach(var temp in userList) {
+            //        if(temp.text == "")
+            //            temp.text = player.Value.NickName;
+            //    }
+            //}
         }
     }
 

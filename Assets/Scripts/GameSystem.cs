@@ -14,7 +14,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public GameObject themePanel, waitPanel, liarPanel, noLiarPanel;
     public Button startBtn;
     public Text wordText;
-    public List<Player> players = new List<Player>();
+    public List<Player> players;
     public List<Button> buttons = new List<Button>();
     // 게임 정답
     public string answer;
@@ -24,9 +24,15 @@ public class GameSystem : MonoBehaviourPunCallbacks
     {
         instance = this;
     }
+    private void Update()
+    {
+        if(players != null)
+            players = GameManager.instance.players;
+    }
 
     private void Start()
     {
+        //players = GameManager.instance.players;
         if (PhotonNetwork.IsMasterClient)
         {
             startBtn.gameObject.SetActive(true);
@@ -36,12 +42,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     void SelectLiar()
     {
-        var temp = PhotonNetwork.CurrentRoom.Players;
-
-        foreach(var player in temp)
-        {
-            players.Add(player.Value);
-        }
 
         if (PhotonNetwork.IsMasterClient)
         {
