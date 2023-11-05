@@ -44,7 +44,7 @@ public class Playerdata : MonoBehaviour
     [PunRPC]
     void Character(int actorNumber)
     {
-        int userIndex = (actorNumber - 1) % 7; //0~7, actornumber가 8이 되면 다시 0부터
+        int userIndex = (actorNumber - 1) % 8; //0~7, actornumber가 8이 되면 다시 0부터
 
         if (userIndex >= 0 && userIndex < animCon.Length)
         {

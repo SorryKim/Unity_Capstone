@@ -211,7 +211,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 0
   ObservedComponents:
-  - {fileID: 8527269651933830527}
+  - {fileID: 1046332492234357507}
   - {fileID: 1046332492234357507}
   sceneViewId: 0
   InstantiationId: 0
@@ -248,10 +248,10 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 2
     Name: walk
   m_SynchronizeLayers:
-  - SynchronizeType: 0
+  - SynchronizeType: 2
     LayerIndex: 0
 --- !u!114 &1241653757494015214
 MonoBehaviour:

@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         int idx = 0;
         foreach (var player in players)
         {
-            if (idx == 0)
+            if (player.IsMasterClient)
                 userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>";
             else
                 userList[idx].text = player.NickName;

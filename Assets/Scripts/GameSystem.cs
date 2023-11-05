@@ -23,6 +23,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public Text word;
     public List<Button> buttons = new List<Button>();
     public List<Player> players;
+
     // 게임 정답
     public string answer;
     public string selectedTheme;
@@ -155,7 +156,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     {
         bool isLiar = PhotonNetwork.LocalPlayer.IsLiar;
         word.text = answer;
-        if (PhotonNetwork.LocalPlayer.IsLiar) liarPanel.SetActive(true);
+        if (isLiar) liarPanel.SetActive(true);
         else noLiarPanel.SetActive(true);
 
         // 10초후의 자동으로 꺼짐
