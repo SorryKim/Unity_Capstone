@@ -27,11 +27,14 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text GameStart;
 
     private PhotonView pv;
+    public bool[] colorNum;
 
   
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
+      
+
     }
 
     void Start()
@@ -55,13 +58,13 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     #region 방
 
+    // 플레이어가 들어 왔을 때
     public override void OnJoinedRoom()
     {
         PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
         
         RoomRenewal();
         chatInput.text = "";
-
         for (int i = 0; i < chatText.Length; i++) 
             chatText[i].text = "";
     }
@@ -116,29 +119,17 @@ public class GameManager : MonoBehaviourPunCallbacks
             if (idx < 8)
             {
                 if (player.Value.IsMasterClient)
-                {
                     userList[idx].text = "<color=green>[방장]" + player.Value.NickName + "</color>";
-                   
-                    
-                }
-                else
-                {
+                else 
                     userList[idx].text = player.Value.NickName;
-                   
-                }
-
              }
             else
             {
                 foreach(var temp in userList) { 
                     if(temp.text == "")
-                    {
                         temp.text = player.Value.NickName;
-                    }
                 }
             }
-
-            
         }
     }
 
