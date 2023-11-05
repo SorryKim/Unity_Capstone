@@ -38,6 +38,7 @@ namespace Photon.Realtime
     /// </remarks>
     public class Player
     {
+        
         /// <summary>
         /// Used internally to identify the masterclient of a room.
         /// </summary>

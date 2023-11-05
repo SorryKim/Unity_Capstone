@@ -53,9 +53,15 @@ public class GameSystem : MonoBehaviourPunCallbacks
     {
         instance = this;
     }
+    private void Update()
+    {
+        if(players != null)
+            players = GameManager.instance.players;
+    }
 
     private void Start()
     {
+        //players = GameManager.instance.players;
         if (PhotonNetwork.IsMasterClient)
         {
             startBtn.gameObject.SetActive(true);
@@ -68,12 +74,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     void SelectLiar()
     {
-        var temp = PhotonNetwork.CurrentRoom.Players;
-
-        foreach(var player in temp)
-        {
-            players.Add(player.Value);
-        }
 
         if (PhotonNetwork.IsMasterClient)
         {
