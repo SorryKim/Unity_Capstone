@@ -47,6 +47,15 @@ MonoBehaviour:
   - GameStart
   - TP
   - SyncTeleport
+  - SyncColor
+  - SetPlayerType
+  - SetColorNum
+  - setColor
+  - AllocateCharacter
+  - Character
+  - selectComplete
+  - IdentifyWord
+  - SelectComplete
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

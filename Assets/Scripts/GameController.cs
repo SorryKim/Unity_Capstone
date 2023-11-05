@@ -28,11 +28,11 @@ public class GameController : MonoBehaviourPunCallbacks
 
     string selectTheme() {
         themePanel.SetActive(true);
-        // TODO: ¹®Á¦ ¼±ÅÃ ¸Ş¼Òµå ±¸Çö
+        // TODO: ë¬¸ì œ ì„ íƒ ë©”ì†Œë“œ êµ¬í˜„
         
         Invoke("temp", 3f);
 
-        return "»ç°ú";
+        return "ì‚¬ê³¼";
     }
 
     void temp()
@@ -47,7 +47,7 @@ public class GameController : MonoBehaviourPunCallbacks
         gameStartBtn.SetActive(false);
     }
 
-    // °ÔÀÓ ½ÃÀÛ ¸Ş¼Òµå
+    // ê²Œì„ ì‹œì‘ ë©”ì†Œë“œ
     [PunRPC] 
     void GameStart()
     {

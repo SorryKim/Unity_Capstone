@@ -14,7 +14,6 @@
 #define SUPPORTED_UNITY
 #endif
 
-
 namespace Photon.Realtime
 {
     using System;
@@ -47,7 +46,6 @@ namespace Photon.Realtime
 
         /// <summary>Backing field for property.</summary>
         private int actorNumber = -1;
-
         /// <summary>Identifier of this player in current room. Also known as: actorNumber or actorNumber. It's -1 outside of rooms.</summary>
         /// <remarks>The ID is assigned per room and only valid in that context. It will change even on leave and re-join. IDs are never re-used per room.</remarks>
         public int ActorNumber
@@ -65,6 +63,21 @@ namespace Photon.Realtime
             get; internal set;
         }
 
+        private int colorNum = 0;
+        // 해당캐릭터의 색깔
+        public int ColorNum
+        {
+            get { return this.colorNum; }
+            set { this.colorNum = value; }  
+        }
+
+        private bool isLiar = false;
+        // 해당캐릭터의 역할
+        public bool IsLiar
+        {
+            get { return this.isLiar; }
+            set { this.isLiar = value; }
+        }
 
         /// <summary>Background field for nickName.</summary>
 		private string nickName = string.Empty;
