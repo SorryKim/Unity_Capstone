@@ -7,18 +7,47 @@ using Photon.Pun;
 using JetBrains.Annotations;
 using UnityEngine.EventSystems;
 using TMPro;
+using System.IO;
+using LitJson;
+using Newtonsoft.Json;
+
+
+
 
 public class GameSystem : MonoBehaviourPunCallbacks
 {
     public static GameSystem instance;
     public GameObject themePanel, waitPanel, liarPanel, noLiarPanel;
     public Button startBtn;
-    public Text wordText;
-    public List<Player> players;
+    public Text word;
+    public List<Player> players = new List<Player>();
     public List<Button> buttons = new List<Button>();
     // 게임 정답
     public string answer;
+    public string selectedTheme;
+    //채리미가 한거
+    [SerializeField] Text nameText;
+    [SerializeField] Text wordText;
+    public TextAsset jsonData;
 
+    [System.Serializable]
+    public class WordData
+    {
+        public string name;
+        public List<string> word;
+    }
+
+    [System.Serializable]
+    public class ThemeData
+    {
+        public List<WordData> theme;
+    }
+
+    [System.Serializable]
+    public class RootData
+    {
+        public ThemeData[] data;
+    }
 
     private void Awake()
     {
@@ -37,6 +66,9 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             startBtn.gameObject.SetActive(true);
         }
+
+        parseJson();
+
     }
     
 
@@ -61,22 +93,37 @@ public class GameSystem : MonoBehaviourPunCallbacks
         
     }
 
-    // 주제어 선택메소드
-    // 구현부탁드립니다 채림씨
-    public string selectWord()
-    {
-        
-        return "사과";
-    }
 
     public void OnClickWord()
     {
-
         GameObject clickObject = EventSystem.current.currentSelectedGameObject;
-        string selectedTheme = clickObject.GetComponentInChildren<TMP_Text>().text.ToString();
-        //Debug.Log("선택된 주제: " + selectedTheme);
+        selectedTheme = clickObject.GetComponentInChildren<TMP_Text>().text.ToString();
+        answer = parseJson();
         photonView.RPC("SelectComplete", RpcTarget.All);
         photonView.RPC("IdentifyWord", RpcTarget.All);
+        // 채리미
+       
+    }
+
+   
+
+    public string parseJson()
+    {
+        ThemeData themeData = JsonConvert.DeserializeObject<ThemeData>(jsonData.text);
+        string temp = "";
+        // 파싱한 데이터 사용 예시
+        foreach (WordData theme in themeData.theme)
+        {
+            
+            if (theme.name == selectedTheme)
+            {
+                int randomIdx = Random.Range(0, theme.word.Count);
+                temp = theme.word[randomIdx];
+            }
+            
+        }
+
+        return temp;
 
     }
     
@@ -87,7 +134,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             themePanel.SetActive(true);
-            answer = selectWord();
         }
         // 방장이 아닌 경우
         else
@@ -109,7 +155,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public void IdentifyWord()
     {
         bool isLiar = PhotonNetwork.LocalPlayer.IsLiar;
-        wordText.text = answer;
+        word.text = answer;
         if (PhotonNetwork.LocalPlayer.IsLiar) liarPanel.SetActive(true);
         else noLiarPanel.SetActive(true);
 
