@@ -76,26 +76,20 @@ public class GameSystem : MonoBehaviourPunCallbacks
     void SelectLiar()
     {
         players = PhotonNetwork.PlayerList;
-        if (PhotonNetwork.IsMasterClient && photonView.IsMine)
-        {
-            int randomIdx = Random.Range(0, players.Length);
-            players[randomIdx].IsLiar = true;
-        }
-
+        int randomIdx = Random.Range(0, players.Length);
+        players[randomIdx].IsLiar = true;
     }
 
     [PunRPC]
     public void GameStart()
     {
-        // 라이어 설정 후
-        SelectLiar();
-
         userListPanel.SetActive(false);
         chatPanel.SetActive(false);
 
         // 방장인 경우 주제선택 페이지 뜸
         if (PhotonNetwork.IsMasterClient)
         {
+            SelectLiar(); // 라이어 설정
             themePanel.SetActive(true);
         }
         // 방장이 아닌 경우
@@ -128,7 +122,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
     // 주제어를 선택한 경우
     public void OnClickWord()
     {
-
         // 현재 클릭된 버튼
         GameObject clickObject = EventSystem.current.currentSelectedGameObject;
         selectedTheme = clickObject.GetComponentInChildren<TMP_Text>().text.ToString();
@@ -137,10 +130,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
         photonView.RPC("SetAnswer", RpcTarget.AllBuffered, s);
         // 주제패널 or 주제대기 패널 비활성화
         photonView.RPC("SelectComplete", RpcTarget.All);
-        // 단어 확인 패널 10초동안 확인
-        photonView.RPC("IdentifyWord", RpcTarget.All);
-       
-       
     }
 
     // 정답단어를 모두에게 전달
@@ -150,26 +139,29 @@ public class GameSystem : MonoBehaviourPunCallbacks
         this.answer = str;
     }
 
-    
-    
-
+   
     // 방장이 단어선택을 마친 경우
     [PunRPC]
     public void SelectComplete()
     {
         themePanel.SetActive(false);
         waitPanel.SetActive(false);
+        IdentifyWord(PhotonNetwork.LocalPlayer.IsLiar);
     }
 
     // 자신의 역할 및 단어 확인
-    [PunRPC]
-    public void IdentifyWord()
+    public void IdentifyWord(bool isLiar)
     {
-        bool isLiar = PhotonNetwork.LocalPlayer.IsLiar;
-        word.text = answer;
+
         if (isLiar) liarPanel.SetActive(true);
         else noLiarPanel.SetActive(true);
+        word.text = answer;
 
+        Player[] temp = PhotonNetwork.PlayerList;
+        foreach (var player in temp)
+        {
+            Debug.Log(player.NickName + " 라이어 여부: " + player.IsLiar.ToString());
+        }
         // 10초후의 자동으로 꺼짐
         StartCoroutine(ExecuteAfterDelay());
 
@@ -182,11 +174,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
         liarPanel.SetActive(false);
         noLiarPanel.SetActive(false);
-
         GameComment.instance.StartComment();
     }
-
-    
 
     #endregion
 

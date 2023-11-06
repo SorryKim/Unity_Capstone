@@ -20,7 +20,6 @@ public class RoomData : MonoBehaviour
         }
         set
         {
-            Debug.Log("������ �Ѿ��");
             _roomInfo = value;
             GetComponent<Button>().onClick.AddListener(() => OnEnterRoom(_roomInfo.Name));
         }
@@ -50,7 +49,6 @@ public class RoomData : MonoBehaviour
         roomOptions.IsVisible = true;
         roomOptions.MaxPlayers = 8;
 
-        PhotonNetwork.NickName = PlayerPrefs.GetString("nickname");
         PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
 }
