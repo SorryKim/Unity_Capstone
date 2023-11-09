@@ -10,18 +10,17 @@ using TMPro;
 using System.IO;
 using LitJson;
 using Newtonsoft.Json;
-
-
-
+using System.IO.Pipes;
 
 public class GameSystem : MonoBehaviourPunCallbacks
 {
     public static GameSystem instance;
     public GameManager gameManager;
-    public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel;
+    public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel, checkPanel;
     public Button startBtn;
     public Text word;
     public Player[] players;
+    public TMP_Text roleCheckText;
 
     // 게임 정답 관련 변수
     public string answer;
@@ -175,8 +174,15 @@ public class GameSystem : MonoBehaviourPunCallbacks
         liarPanel.SetActive(false);
         noLiarPanel.SetActive(false);
         GameComment.instance.StartComment();
+        checkPanel.SetActive(true);
     }
 
+    // 제시어 확인 텍스트
+    public void SetCheckUI(bool isLiar)
+    {
+        if (isLiar) roleCheckText.text = "라이어";
+        else roleCheckText.text = answer;
+    }
     #endregion
 
 }
