@@ -64,20 +64,22 @@ namespace Photon.Realtime
             get; internal set;
         }
 
-        private int colorNum = 0;
-        // 해당캐릭터의 색깔
-        public int ColorNum
-        {
-            get { return this.colorNum; }
-            set { this.colorNum = value; }  
-        }
 
-        private bool isLiar = false;
         // 해당캐릭터의 역할
+        private bool isLiar = false;
+       
         public bool IsLiar
         {
             get { return this.isLiar; }
             set { this.isLiar = value; }
+        }
+
+        // 코멘팅 여부
+        private bool isCommenting = false;
+        public bool IsCommenting
+        {
+            get { return this.isCommenting; }
+            set { this.isCommenting = value; }
         }
 
         /// <summary>Background field for nickName.</summary>

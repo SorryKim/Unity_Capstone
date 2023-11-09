@@ -15,14 +15,17 @@ using System.IO.Pipes;
 public class GameSystem : MonoBehaviourPunCallbacks
 {
     public static GameSystem instance;
+    public GameComment gameComment;
     public GameManager gameManager;
-    public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel, checkPanel;
+    public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel, checkPanel, loadingPanel;
     public Button startBtn;
     public Text word;
     public Player[] players;
     public TMP_Text roleCheckText;
+    public int[] commentSequence;
 
-    // 게임 정답 관련 변수
+    private bool isLiar;
+# region 게임 정답 관련 변수
     public string answer;
     public string selectedTheme;
     public TextAsset jsonData;
@@ -38,6 +41,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
         public List<WordData> theme;
     }
 
+#endregion
+
     private void Awake()
     {
         instance = this;
@@ -47,6 +52,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
   
     }
 
+
+    
     private void Start()
     {
         //players = GameManager.instance.players;
@@ -54,8 +61,9 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             startBtn.gameObject.SetActive(true);
         }
+        gameComment = GetComponent<GameComment>();
         gameManager = GetComponent<GameManager>();
-        
+       
     }
 
 
@@ -64,58 +72,67 @@ public class GameSystem : MonoBehaviourPunCallbacks
     // 게임 시작버튼 누를 경우
     public void OnPressedStart()
     {
-        
-        // 모든플레이어들 게임시작
+        // 모든플레이어 스타트
         photonView.RPC("GameStart", RpcTarget.All);
-        
-    }
-
-
-    // 라이어 설정
-    void SelectLiar()
-    {
-        players = PhotonNetwork.PlayerList;
-        int randomIdx = Random.Range(0, players.Length);
-        players[randomIdx].IsLiar = true;
     }
 
     [PunRPC]
     public void GameStart()
     {
+        // 로딩창 띄움
         userListPanel.SetActive(false);
         chatPanel.SetActive(false);
+        loadingPanel.SetActive(true);
+        
+        // 기본 설정 시작
+        StartCoroutine(StartSetting());
 
-        // 방장인 경우 주제선택 페이지 뜸
+        // 설정이 끝난 후 단어선택 창 띄움
         if (PhotonNetwork.IsMasterClient)
-        {
-            SelectLiar(); // 라이어 설정
             themePanel.SetActive(true);
-        }
-        // 방장이 아닌 경우
         else
-        {
             waitPanel.SetActive(true);
-        }
     }
 
-
-    // 해당 주제에 맞는 단어를 JSON에서 가져오기
-    public string parseJson()
+    // 기본설정
+    IEnumerator StartSetting()
     {
-        ThemeData themeData = JsonConvert.DeserializeObject<ThemeData>(jsonData.text);
-        string temp = "";
-        // 파싱한 데이터 사용 예시
-        foreach (WordData theme in themeData.theme)
+
+        // 방장일 경우만 진행
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (theme.name == selectedTheme)
+
+            // playerlist와 발표순서 정함
+            players = PhotonNetwork.PlayerList;
+            commentSequence = new int[players.Length];
+            int idx = Random.Range(0, players.Length);
+
+            for (int i = 0; i < commentSequence.Length; i++)
             {
-                int randomIdx = Random.Range(0, theme.word.Count);
-                temp = theme.word[randomIdx];
+                if (idx >= commentSequence.Length)
+                    idx = 0;
+                commentSequence[i] = idx;
+                idx++;
             }
+            idx = Random.Range(0, players.Length);
+            players[idx].IsLiar = true;
 
+            // 위에서 설정된 정보를 모두와 동기화
+            photonView.RPC("SendSetting", RpcTarget.All, players, commentSequence);
         }
-        return temp;
+        
+        // 5초 대기
+        yield return new WaitForSeconds(5f);
+        loadingPanel.SetActive(false);
+    }
 
+    // 변수 동기화
+    [PunRPC]
+    public void SendSetting(Player[] list, int[] arr)
+    {
+        this.players = list;
+        this.commentSequence = arr;
+        isLiar = PhotonNetwork.LocalPlayer.IsLiar;
     }
 
     // 주제어를 선택한 경우
@@ -131,6 +148,23 @@ public class GameSystem : MonoBehaviourPunCallbacks
         photonView.RPC("SelectComplete", RpcTarget.All);
     }
 
+    // 해당 주제에 맞는 단어를 JSON에서 가져오기
+    public string parseJson()
+    {
+        ThemeData themeData = JsonConvert.DeserializeObject<ThemeData>(jsonData.text);
+        string temp = "";
+        // 파싱한 데이터 사용 예시
+        foreach (WordData theme in themeData.theme)
+        {
+            if (theme.name == selectedTheme)
+            {
+                int randomIdx = Random.Range(0, theme.word.Count);
+                temp = theme.word[randomIdx];
+            }
+        }
+        return temp;
+    }
+
     // 정답단어를 모두에게 전달
     [PunRPC]
     void SetAnswer(string str)
@@ -138,18 +172,17 @@ public class GameSystem : MonoBehaviourPunCallbacks
         this.answer = str;
     }
 
-   
     // 방장이 단어선택을 마친 경우
     [PunRPC]
     public void SelectComplete()
     {
         themePanel.SetActive(false);
         waitPanel.SetActive(false);
-        IdentifyWord(PhotonNetwork.LocalPlayer.IsLiar);
+        IdentifyWord();
     }
 
     // 자신의 역할 및 단어 확인
-    public void IdentifyWord(bool isLiar)
+    public void IdentifyWord()
     {
 
         if (isLiar) liarPanel.SetActive(true);
@@ -166,6 +199,13 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     }
 
+    // 제시어 확인 텍스트
+    public void SetCheckUI(bool isLiar)
+    {
+        if (isLiar) roleCheckText.text = "당신은 라이어";
+        else roleCheckText.text = "제시어: " + answer;
+    }
+
     // 10초동안 확인하는 코루틴
     IEnumerator ExecuteAfterDelay()
     {
@@ -173,15 +213,13 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
         liarPanel.SetActive(false);
         noLiarPanel.SetActive(false);
-        GameComment.instance.StartComment();
         checkPanel.SetActive(true);
-    }
+        userListPanel.SetActive(true);
+        chatPanel.SetActive(true);
+        SetCheckUI(isLiar);
 
-    // 제시어 확인 텍스트
-    public void SetCheckUI(bool isLiar)
-    {
-        if (isLiar) roleCheckText.text = "라이어";
-        else roleCheckText.text = answer;
+        // 코멘트시작!
+        gameComment.StartComment();
     }
     #endregion
 

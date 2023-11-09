@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+using UnityEditor;
 
 public class GameComment : MonoBehaviourPunCallbacks
 {
@@ -13,7 +16,6 @@ public class GameComment : MonoBehaviourPunCallbacks
     public static GameComment instance;
 
     // 발표 순서
-    public List<int> commentSequence;
     public GameObject commentWaitPanel, commentPanel;
     public TMP_InputField commentInput;
     public TMP_Text[] comments;
@@ -31,123 +33,69 @@ public class GameComment : MonoBehaviourPunCallbacks
     {
         gameSystem = GetComponent<GameSystem>();
         gameManager = GetComponent<GameManager>();
-        
     }
 
-
-    // 발표 순서를 정하는 메소드
-    public void SetSequence()
-    {
-        Player[] playerArr = PhotonNetwork.PlayerList;
-
-        // 누구부터 시작할지
-        int startIdx = UnityEngine.Random.Range(0, playerArr.Length);
-
-        // 시작한사람부터 차례대로
-        for (int i = startIdx; i < gameSystem.players.Length; i++)
-        {
-            commentSequence.Add(i);
-        }
-        for (int i = 0; i < startIdx; i++)
-        {
-            commentSequence.Add(i);
-        }
-    }
-
-
+    #region 코멘트 발표
 
     // 발표 시작
     public void StartComment()
     {
-        if(PhotonNetwork.IsMasterClient)
-            SetSequence();
-
-        StartCoroutine(CommentRoutine());
+        
     }
 
-    IEnumerator CommentRoutine()
+    IEnumerator CommentingTimer()
     {
-        foreach(var idx in commentSequence)
+        for (int i = 0; i < gameSystem.commentSequence.Length; i++)
         {
-            Player player = PhotonNetwork.PlayerList[idx];
-            if(PhotonNetwork.LocalPlayer == player) 
-                startComment();
+
+            int idx = gameSystem.commentSequence[i];
+            gameSystem.players[idx].IsCommenting = true;
+
+            if (PhotonNetwork.LocalPlayer.IsCommenting)
+            {
+                photonView.RPC("StartCommenting", RpcTarget.All, idx);
+                yield return new WaitForSeconds(30f); // 30초 동안 코멘트 허용
+                photonView.RPC("EndCommenting", RpcTarget.All);
+            }
             else
-                while(!isEnd)
-                    commentWaitPanel.SetActive(true);
+            {
+                commentWaitPanel.SetActive(true);
+            }
+
+            gameSystem.players[idx].IsCommenting = false;
+            yield return new WaitForSeconds(1f);
+
         }
-            
-        yield return new WaitForSeconds(2f); // 대기 시간 설정
-
     }
 
-    void startComment()
-    {
-        photonView.RPC("CommentingTime", RpcTarget.All);
-        Commenting();
-        StartCoroutine(StartTimer());
-        photonView.RPC("CommentingEndTime", RpcTarget.All);
-    }
-
-    public void CommentWaiting()
-    {
-        commentWaitPanel.SetActive(true);
-    }
-
-    // 누군가 코멘팅 중일 때 rpc를 통해 모두에게 코멘팅중임을 알림
     [PunRPC]
-    public void CommentingTime()
+    public void StartCommenting(int idx)
     {
-        isEnd = false;
-    }
-
-    // 코멘팅이 끝난 경우
-    [PunRPC]
-    public void CommentingEndTime()
-    {
-        isEnd = true;
-    }
-
-
-    // 발표 메소드
-    void Commenting()
-    {
-        // 코멘트 인풋창 활성화
         commentPanel.SetActive(true);
-        isCommentAllowed = true;
+        Send(idx);
     }
 
-    private IEnumerator StartTimer()
+    [PunRPC]
+    public void EndCommenting()
     {
-        yield return new WaitForSeconds(30);
-        if (isCommentAllowed)
-        {
-            Send();
-        }
+        commentPanel.SetActive(false);
+        commentWaitPanel.SetActive(false);
     }
+
+
+
+    #endregion
 
     #region 코멘트 작성
-    public void Send()
+    public void Send(int idx)
     {
-        photonView.RPC("SendComment", RpcTarget.All, (PhotonNetwork.LocalPlayer.NickName + " : " + commentInput.text));
+        photonView.RPC("SendComment", RpcTarget.All, (PhotonNetwork.LocalPlayer.NickName + " : " + commentInput.text), idx);
     }
 
     [PunRPC]
-    public void SendComment(string msg)
+    public void SendComment(string msg, int idx)
     {
-        isCommentAllowed = false;
-        int idx = 0;
-        List<Player> temp = gameManager.players;
-        for(int i = 0; i < temp.Count; i++)
-        {
-            if (temp[i] == PhotonNetwork.LocalPlayer)
-            {
-                idx = i;
-                break;
-            }
-        }
         comments[idx].text = msg;
-        commentPanel.SetActive(false);
     }
     #endregion
 }
