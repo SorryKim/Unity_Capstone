@@ -66,13 +66,9 @@ namespace Photon.Realtime
 
 
         // 해당캐릭터의 역할
-        private bool isLiar = false;
+
+        public bool IsLiar = false;
        
-        public bool IsLiar
-        {
-            get { return this.isLiar; }
-            set { this.isLiar = value; }
-        }
 
         // 코멘팅 여부
         private bool isCommenting = false;

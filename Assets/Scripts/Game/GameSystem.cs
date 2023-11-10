@@ -11,6 +11,7 @@ using System.IO;
 using LitJson;
 using Newtonsoft.Json;
 using System.IO.Pipes;
+using System;
 
 public class GameSystem : MonoBehaviourPunCallbacks
 {
@@ -22,9 +23,11 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public Text word;
     public Player[] players;
     public TMP_Text roleCheckText;
-    public int[] commentSequence;
+    public int commentStartIdx;
+    public int liarIdx;
 
-    private bool isLiar;
+
+    private bool isLiar = false;
 # region 게임 정답 관련 변수
     public string answer;
     public string selectedTheme;
@@ -63,7 +66,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         }
         gameComment = GetComponent<GameComment>();
         gameManager = GetComponent<GameManager>();
-       
+        isLiar = false;
     }
 
 
@@ -101,38 +104,46 @@ public class GameSystem : MonoBehaviourPunCallbacks
         // 방장일 경우만 진행
         if (PhotonNetwork.IsMasterClient)
         {
-
-            // playerlist와 발표순서 정함
             players = PhotonNetwork.PlayerList;
-            commentSequence = new int[players.Length];
-            int idx = Random.Range(0, players.Length);
 
-            for (int i = 0; i < commentSequence.Length; i++)
+            // 코멘트 첫 시작 순서
+            commentStartIdx = UnityEngine.Random.Range(0, players.Length);
+
+            // 라이어 인덱스
+            liarIdx = UnityEngine.Random.Range(0, players.Length);
+
+           
+            for (int i = 0; i < players.Length; i++)
             {
-                if (idx >= commentSequence.Length)
-                    idx = 0;
-                commentSequence[i] = idx;
-                idx++;
+                ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
+                if(i == liarIdx)
+                    customProperties.Add("IsLiar", true); // 변경할 속성 추가
+                else
+                    customProperties.Add("IsLiar", false); // 변경할 속성 추가
+
+                // SetCustomProperties 메서드를 사용하여 커스텀 속성을 설정
+                players[i].SetCustomProperties(customProperties);
             }
-            idx = Random.Range(0, players.Length);
-            players[idx].IsLiar = true;
+
+          
+            
 
             // 위에서 설정된 정보를 모두와 동기화
-            photonView.RPC("SendSetting", RpcTarget.All, players, commentSequence);
+            photonView.RPC("SendSetting", RpcTarget.All, players, commentStartIdx, liarIdx);
         }
         
         // 5초 대기
         yield return new WaitForSeconds(5f);
-     
         loadingPanel.SetActive(false);
     }
 
     // 변수 동기화
     [PunRPC]
-    public void SendSetting(Player[] list, int[] arr)
+    public void SendSetting(Player[] list, int commentStartIdx, int liarIdx)
     {
-        this.players = list;
-        this.commentSequence = arr;
+        players = list;
+        this.commentStartIdx = commentStartIdx;
+        this.liarIdx = liarIdx;
     }
 
     // 주제어를 선택한 경우
@@ -158,7 +169,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             if (theme.name == selectedTheme)
             {
-                int randomIdx = Random.Range(0, theme.word.Count);
+                int randomIdx = UnityEngine.Random.Range(0, theme.word.Count);
                 temp = theme.word[randomIdx];
             }
         }
@@ -178,26 +189,10 @@ public class GameSystem : MonoBehaviourPunCallbacks
     {
         themePanel.SetActive(false);
         waitPanel.SetActive(false);
-        IdentifyWord();
-    }
-
-    // 자신의 역할 및 단어 확인
-    public void IdentifyWord()
-    {
-        isLiar = PhotonNetwork.LocalPlayer.IsLiar;
-        if (isLiar) liarPanel.SetActive(true);
-        else noLiarPanel.SetActive(true);
-        word.text = answer;
-
-        Player[] temp = PhotonNetwork.PlayerList;
-        foreach (var player in temp)
-        {
-            Debug.Log(player.NickName + " 라이어 여부: " + player.IsLiar.ToString());
-        }
-        // 10초후의 자동으로 꺼짐
         StartCoroutine(ExecuteAfterDelay());
-
     }
+
+    
 
     // 제시어 확인 텍스트
     public void SetCheckUI(bool isLiar)
@@ -209,6 +204,28 @@ public class GameSystem : MonoBehaviourPunCallbacks
     // 10초동안 확인하는 코루틴
     IEnumerator ExecuteAfterDelay()
     {
+        bool isLiar = false;
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("IsLiar"))
+        {
+            isLiar = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLiar"];
+        }
+
+        if (isLiar)
+        {
+            liarPanel.SetActive(true);
+            noLiarPanel.SetActive(false);
+        }
+        else
+        {
+            liarPanel.SetActive(false);
+            noLiarPanel.SetActive(true);
+        }
+
+        foreach(var player in PhotonNetwork.PlayerList)
+        {
+            Debug.Log("닉네임: " + player.NickName + " 라이어여부: " + player.CustomProperties["IsLiar"].ToString());
+        }
         yield return new WaitForSeconds(10);
 
         liarPanel.SetActive(false);

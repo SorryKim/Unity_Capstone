@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using UnityEditor;
 using System;
+using UnityEngine.XR;
 
 public class GameComment : MonoBehaviourPunCallbacks
 {
@@ -18,6 +19,7 @@ public class GameComment : MonoBehaviourPunCallbacks
 
     private int currentPlayerIndex = 0; // 현재 순서에 있는 플레이어의 인덱스
     private bool isMyTurn; // 현재 플레이어의 차례 여부
+    private bool inputReceived = false; // 코멘트 입력여부
 
     // 발표 순서
     public GameObject commentWaitPanel, commentPanel;
@@ -35,12 +37,23 @@ public class GameComment : MonoBehaviourPunCallbacks
         gameManager = GetComponent<GameManager>();
     }
 
+    private void Update()
+    {
+        if (isMyTurn && Input.GetKeyDown(KeyCode.Return))
+        {
+            int myPlayerIndex = Array.IndexOf(PhotonNetwork.PlayerList, PhotonNetwork.LocalPlayer);
+            Send(myPlayerIndex);
+            EndTurn();
+        }
+    }
     #region 순서대로 코멘트
 
     public void StartComment()
     {
+        currentPlayerIndex = gameSystem.commentStartIdx;
         UpdateTurnUI();
     }
+
     void UpdateTurnUI()
     {
         int myPlayerIndex = Array.IndexOf(PhotonNetwork.PlayerList, PhotonNetwork.LocalPlayer);
@@ -49,6 +62,7 @@ public class GameComment : MonoBehaviourPunCallbacks
             isMyTurn = true;
             commentPanel.SetActive(true);
             commentWaitPanel.SetActive(false);
+            StartCoroutine(WaitForInput());
         }
         else
         {
@@ -78,6 +92,24 @@ public class GameComment : MonoBehaviourPunCallbacks
     void SendUpdateTurnUI()
     {
         UpdateTurnUI();
+    }
+
+    IEnumerator WaitForInput()
+    {
+        float timer = 0f;
+        float maxWaitTime = 30f;
+
+        while (!inputReceived && timer < maxWaitTime)
+        {
+            // 입력이 없으면 대기
+            yield return null;
+
+            // 경과 시간 증가
+            timer += Time.deltaTime;
+        }
+
+        // 입력이 없거나 대기 시간이 초과하면 처리
+        commentPanel.SetActive(false);
     }
 
     #endregion
