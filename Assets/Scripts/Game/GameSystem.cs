@@ -123,6 +123,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         
         // 5초 대기
         yield return new WaitForSeconds(5f);
+     
         loadingPanel.SetActive(false);
     }
 
@@ -132,7 +133,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
     {
         this.players = list;
         this.commentSequence = arr;
-        isLiar = PhotonNetwork.LocalPlayer.IsLiar;
     }
 
     // 주제어를 선택한 경우
@@ -184,7 +184,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     // 자신의 역할 및 단어 확인
     public void IdentifyWord()
     {
-
+        isLiar = PhotonNetwork.LocalPlayer.IsLiar;
         if (isLiar) liarPanel.SetActive(true);
         else noLiarPanel.SetActive(true);
         word.text = answer;

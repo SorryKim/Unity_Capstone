@@ -66,6 +66,7 @@ MonoBehaviour:
   - SendSetting
   - StartCommenting
   - EndCommenting
+  - SendUpdateTurnUI
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
