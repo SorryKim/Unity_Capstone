@@ -68,11 +68,11 @@ public class PlayerMovement : MonoBehaviourPun, IPunInstantiateMagicCallback
         {
             // 캐릭터의 위치와 회전을 순간이동할 위치로 설정
             Debug.Log("순간이동");
-            transform.position = new Vector3(-25,0,0);
+            transform.position = new Vector3(-50,0,0);
            
 
             // 위치 및 회전 정보를 다른 플레이어에게 동기화
-            pv.RPC("SyncTeleport", RpcTarget.Others, new Vector3(-25, 0, 0));
+            pv.RPC("SyncTeleport", RpcTarget.Others, new Vector3(-50, 0, 0));
             isVote = !isVote;
         }
         else if (isVote && Input.GetKeyDown(KeyCode.Escape))
