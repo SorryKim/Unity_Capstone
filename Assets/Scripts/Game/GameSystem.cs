@@ -192,8 +192,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
         StartCoroutine(ExecuteAfterDelay());
     }
 
-    
-
     // 제시어 확인 텍스트
     public void SetCheckUI(bool isLiar)
     {

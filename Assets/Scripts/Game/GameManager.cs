@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         players.Add(newPlayer);
         RoomRenewal();
-        ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>");
+        ChatRPC("<color=red>" + newPlayer.NickName + "님이 참가하셨습니다</color>");
 
      
     }
@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         RoomRenewal();
-        ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
+        ChatRPC("<color=red>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
     }
 
     
