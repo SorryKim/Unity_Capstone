@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour
 {
     public float timerDuration = 10.0f; // 타이머 기간(초)
-    private float currentTime; // 현재 시간
+    public float currentTime; // 현재 시간
     private Text timerText;
 
     // Start is called before the first frame update

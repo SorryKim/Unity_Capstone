@@ -67,6 +67,8 @@ MonoBehaviour:
   - StartCommenting
   - EndCommenting
   - SendUpdateTurnUI
+  - ShowWaitPanel
+  - HideAllPanels
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

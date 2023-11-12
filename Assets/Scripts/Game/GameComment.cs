@@ -17,9 +17,11 @@ public class GameComment : MonoBehaviourPunCallbacks
     GameManager gameManager;
     public static GameComment instance;
 
-    private int currentPlayerIndex = 0; // 현재 순서에 있는 플레이어의 인덱스
-    private bool isMyTurn; // 현재 플레이어의 차례 여부
-    private bool inputReceived = false; // 코멘트 입력여부
+  
+    public float commentDuration = 10f; // comment() 호출을 유지하는 시간
+
+    private int currentPlayerIndex; // 현재 순서에 있는 플레이어의 인덱스
+    private int startIndex;
 
     // 발표 순서
     public GameObject commentWaitPanel, commentPanel;
@@ -39,84 +41,111 @@ public class GameComment : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (isMyTurn && Input.GetKeyDown(KeyCode.Return))
-        {
-            int myPlayerIndex = Array.IndexOf(PhotonNetwork.PlayerList, PhotonNetwork.LocalPlayer);
-            Send(myPlayerIndex);
-            EndTurn();
-        }
+ 
     }
     #region 순서대로 코멘트
 
-    public void StartComment()
+    public void CommentStart()
     {
-        currentPlayerIndex = gameSystem.commentStartIdx;
-        UpdateTurnUI();
-    }
-
-    void UpdateTurnUI()
-    {
-        int myPlayerIndex = Array.IndexOf(PhotonNetwork.PlayerList, PhotonNetwork.LocalPlayer);
-        if(myPlayerIndex == currentPlayerIndex)
+        if (PhotonNetwork.IsMasterClient)
         {
-            isMyTurn = true;
-            commentPanel.SetActive(true);
-            commentWaitPanel.SetActive(false);
-            StartCoroutine(WaitForInput());
-        }
-        else
-        {
-            isMyTurn = false;
-            commentPanel.SetActive(false);
-            commentWaitPanel.SetActive(true);
+            // 특정 플레이어부터 코멘팅을 시작하는 동작 수행
+            startIndex = UnityEngine.Random.Range(0, PhotonNetwork.PlayerList.Length);
+            StartCoroutine(CommentingRoutine());
         }
     }
 
-    public void EndTurn()
+    private IEnumerator CommentingRoutine()
     {
-        int myPlayerIndex = Array.IndexOf(PhotonNetwork.PlayerList, PhotonNetwork.LocalPlayer);
-        if (isMyTurn)
+        Player[] players = PhotonNetwork.PlayerList;
+        currentPlayerIndex = startIndex;
+
+        while(currentPlayerIndex < players.Length)
         {
+            Player nowPlayer = players[currentPlayerIndex];
+            photonView.RPC("StartCommenting", nowPlayer, currentPlayerIndex);
 
-            // TODO: 코멘트 입력 처리 로직 추가
-            photonView.RPC("Send", RpcTarget.AllBuffered,myPlayerIndex);
-            // 다음 플레이어로 차례 이동
-            currentPlayerIndex = (currentPlayerIndex + 1) % PhotonNetwork.PlayerList.Length;
+            foreach (var player in players)
+            {
+                if (nowPlayer.Equals(player))
+                    continue;
+                photonView.RPC("ShowWaitPanel", player);
+            }
 
-            // 다음 플레이어에게 차례가 넘어갔음을 알림
-            photonView.RPC("SendUpdateTurnUI", RpcTarget.AllBuffered);
+            yield return new WaitForSeconds(10f);
+
+            photonView.RPC("EndCommenting", RpcTarget.All, currentPlayerIndex);
+            photonView.RPC("HideAllPanels", RpcTarget.All);
+            currentPlayerIndex++;
         }
+
+        currentPlayerIndex = 0;
+
+        while(currentPlayerIndex < startIndex)
+        {
+            Player nowPlayer = players[currentPlayerIndex];
+            photonView.RPC("StartCommenting", nowPlayer, currentPlayerIndex);
+
+            foreach (var player in players)
+            {
+                if (nowPlayer.Equals(player))
+                    continue;
+                photonView.RPC("ShowWaitPanel", player);
+            }
+
+            yield return new WaitForSeconds(10f);
+
+            photonView.RPC("EndCommenting", RpcTarget.All, currentPlayerIndex);
+            photonView.RPC("HideAllPanels", RpcTarget.All);
+            currentPlayerIndex++;
+        }
+    
+
+        // 모든 플레이어의 코멘팅이 종료되면 원하는 작업 수행
+        Debug.Log("Game Over!");
     }
 
     [PunRPC]
-    void SendUpdateTurnUI()
+    private void StartCommenting(int playerIndex)
     {
-        UpdateTurnUI();
+        // 특정 플레이어의 코멘팅을 시작하는 동작 수행
+        Debug.Log("Player " + playerIndex + " Start Commenting");
+        commentPanel.SetActive(true);
     }
 
-    IEnumerator WaitForInput()
+    [PunRPC]
+    private void EndCommenting(int playerIndex)
     {
-        float timer = 0f;
-        float maxWaitTime = 30f;
-
-        while (!inputReceived && timer < maxWaitTime)
-        {
-            // 입력이 없으면 대기
-            yield return null;
-
-            // 경과 시간 증가
-            timer += Time.deltaTime;
-        }
-
-        // 입력이 없거나 대기 시간이 초과하면 처리
+        // 특정 플레이어의 코멘팅을 종료하는 동작 수행
+        Debug.Log("Player " + playerIndex + " End Commenting");
         commentPanel.SetActive(false);
+        commentWaitPanel.SetActive(false);
     }
+
+    [PunRPC]
+    private void HideAllPanels()
+    {
+        // 모든 패널을 숨김
+        commentWaitPanel.SetActive(false);
+        commentPanel.SetActive(false);
+        // 추가로 숨기고 싶은 다른 패널이 있다면 여기에 추가
+    }
+
+    [PunRPC]
+    private void ShowWaitPanel()
+    {
+        // 모든 플레이어에게 대기 패널을 보여주는 동작 수행
+        commentPanel.SetActive(false);
+        commentWaitPanel.SetActive(true);
+    }
+
 
     #endregion
 
     #region 코멘트 작성
-    public void Send(int idx)
+    public void CommentSend()
     {
+        int idx = Array.IndexOf(PhotonNetwork.PlayerList, PhotonNetwork.LocalPlayer);
         photonView.RPC("SendComment", RpcTarget.All, (PhotonNetwork.LocalPlayer.NickName + " : " + commentInput.text), idx);
     }
 

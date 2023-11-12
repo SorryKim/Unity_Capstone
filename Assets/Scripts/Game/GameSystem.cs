@@ -203,7 +203,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     IEnumerator ExecuteAfterDelay()
     {
         bool isLiar = false;
-
+        word.text = answer;
         if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("IsLiar"))
         {
             isLiar = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLiar"];
@@ -220,10 +220,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
             noLiarPanel.SetActive(true);
         }
 
-        foreach(var player in PhotonNetwork.PlayerList)
-        {
-            Debug.Log("닉네임: " + player.NickName + " 라이어여부: " + player.CustomProperties["IsLiar"].ToString());
-        }
         yield return new WaitForSeconds(10);
 
         liarPanel.SetActive(false);
@@ -234,7 +230,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         SetCheckUI(isLiar);
 
         // 코멘트시작!
-        gameComment.StartComment();
+        gameComment.CommentStart();
     }
     #endregion
 
