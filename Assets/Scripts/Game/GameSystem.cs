@@ -105,14 +105,12 @@ public class GameSystem : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             players = PhotonNetwork.PlayerList;
-
             // 코멘트 첫 시작 순서
             commentStartIdx = UnityEngine.Random.Range(0, players.Length);
 
             // 라이어 인덱스
             liarIdx = UnityEngine.Random.Range(0, players.Length);
 
-           
             for (int i = 0; i < players.Length; i++)
             {
                 ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
@@ -124,9 +122,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
                 // SetCustomProperties 메서드를 사용하여 커스텀 속성을 설정
                 players[i].SetCustomProperties(customProperties);
             }
-
-          
-            
 
             // 위에서 설정된 정보를 모두와 동기화
             photonView.RPC("SendSetting", RpcTarget.All, players, commentStartIdx, liarIdx);
@@ -209,6 +204,10 @@ public class GameSystem : MonoBehaviourPunCallbacks
             isLiar = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLiar"];
         }
 
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            Debug.Log(player.NickName + "의 라이어 여부: " + player.CustomProperties["IsLiar"] );
+        }
         if (isLiar)
         {
             liarPanel.SetActive(true);

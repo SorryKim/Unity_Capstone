@@ -15,6 +15,7 @@ public class GameComment : MonoBehaviourPunCallbacks
 {
     GameSystem gameSystem;
     GameManager gameManager;
+    GameDiscussion gameDiscussion;
     public static GameComment instance;
 
   
@@ -37,6 +38,7 @@ public class GameComment : MonoBehaviourPunCallbacks
     {
         gameSystem = GetComponent<GameSystem>();
         gameManager = GetComponent<GameManager>();
+        gameDiscussion = GetComponent<GameDiscussion>();
     }
 
     private void Update()
@@ -99,10 +101,10 @@ public class GameComment : MonoBehaviourPunCallbacks
             photonView.RPC("HideAllPanels", RpcTarget.All);
             currentPlayerIndex++;
         }
-    
+
 
         // 모든 플레이어의 코멘팅이 종료되면 원하는 작업 수행
-        Debug.Log("Game Over!");
+        photonView.RPC("RPCDiscussion", RpcTarget.All);
     }
 
     [PunRPC]
@@ -137,6 +139,12 @@ public class GameComment : MonoBehaviourPunCallbacks
         // 모든 플레이어에게 대기 패널을 보여주는 동작 수행
         commentPanel.SetActive(false);
         commentWaitPanel.SetActive(true);
+    }
+
+    [PunRPC]
+    private void RPCDiscussion()
+    {
+        gameDiscussion.StartDiscussion();
     }
 
 
