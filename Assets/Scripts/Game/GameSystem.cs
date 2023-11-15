@@ -114,10 +114,16 @@ public class GameSystem : MonoBehaviourPunCallbacks
             for (int i = 0; i < players.Length; i++)
             {
                 ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
-                if(i == liarIdx)
+                if (i == liarIdx)
+                {
                     customProperties.Add("IsLiar", true); // 변경할 속성 추가
+                    customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                }
                 else
+                {
                     customProperties.Add("IsLiar", false); // 변경할 속성 추가
+                    customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                }
 
                 // SetCustomProperties 메서드를 사용하여 커스텀 속성을 설정
                 players[i].SetCustomProperties(customProperties);

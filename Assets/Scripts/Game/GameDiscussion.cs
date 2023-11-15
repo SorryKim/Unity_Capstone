@@ -10,10 +10,17 @@ public class GameDiscussion : MonoBehaviour
     public static GameDiscussion instance;
     private PhotonView pv;
 
+    public GameVote gameVote;
+
     private void Awake()
     {
         instance = this;
         pv = GetComponent<PhotonView>();
+    }
+
+    private void Start()
+    {
+        gameVote = GetComponent<GameVote>();
     }
 
 
@@ -34,6 +41,12 @@ public class GameDiscussion : MonoBehaviour
         {
             player.transform.position = targetLocation.position;
         }
+
+        // 60초 정도 대기 후
+        // 대기와 대기화면 구성 필요
+
+        // 투표 시작
+        gameVote.StartVote();
     }
 
    
