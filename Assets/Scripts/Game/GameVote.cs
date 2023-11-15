@@ -28,14 +28,21 @@ public class GameVote : MonoBehaviourPunCallbacks
     }
 
 
-
     public void StartVote()
     {
+        isVoteStart = true;
+        StartCoroutine(VoteRoutine());
+    }
+
+    private IEnumerator VoteRoutine() {
+
+        // VotePanel 활성화
         votePanel.SetActive(true);
         Player[] players = PhotonNetwork.PlayerList;
         for (int i = 0; i < players.Length; i++)
         {
             string nickname = players[i].NickName;
+            // 다른 사람들의 투표공간
             if (nickname != PhotonNetwork.LocalPlayer.NickName)
             {
                 voteList[i].SetActive(true);
@@ -44,15 +51,25 @@ public class GameVote : MonoBehaviourPunCallbacks
                 int idx = i;
                 buttonTransform.GetComponent<Button>().onClick.AddListener(() => OnVoteClick(players[idx].NickName));
             }
+            // 자신의 공간일 경우 버튼칸은 비활성화인 상태로 생성
+            else
+            {
+                
+                voteList[i].SetActive(true);
+                voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
+                voteList[i].transform.Find("Button").gameObject.SetActive(false);
+            }
         }
 
-        isVoteStart = true;
+        // 30초 대기
+        yield return new WaitForSeconds(30f);
 
+        // VotePanel 비활성화
+        votePanel.SetActive(false);
     }
 
     public void OnVoteClick(string buttonNickName)
     {
-        
         foreach(Player player in PhotonNetwork.PlayerList) {
             if(buttonNickName == player.NickName)
             {
@@ -76,6 +93,12 @@ public class GameVote : MonoBehaviourPunCallbacks
             btn.gameObject.SetActive(false);
         }
 
+        Player temp = PhotonNetwork.LocalPlayer;
+        Hashtable customProperty = temp.CustomProperties;
+        // 업데이트된 값을 다시 CustomProperties에 저장
+        customProperty["IsVote"] = true;
+        temp.SetCustomProperties(customProperty);
+
     }
     void Update()
     {
@@ -86,8 +109,16 @@ public class GameVote : MonoBehaviourPunCallbacks
             {
                 Player player = players[i];
                 GameObject voteObject = voteList[i];
+                // 투표당한 수
                 int cnt = (int)player.CustomProperties["VoteCount"];
+                // 투표완료 여부
+                bool isVote = (bool)player.CustomProperties["IsVote"];
+
                 Transform votersTransform = voteObject.transform.Find("voters");
+                
+                // 투표한 경우 투표표시
+                if (isVote)
+                    voteObject.transform.Find("Isvote").gameObject.SetActive(true);
 
                 if (votersTransform != null)
                 {

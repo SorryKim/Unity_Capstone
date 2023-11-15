@@ -118,11 +118,13 @@ public class GameSystem : MonoBehaviourPunCallbacks
                 {
                     customProperties.Add("IsLiar", true); // 변경할 속성 추가
                     customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                    customProperties.Add("IsVote", false); // 투표에서 사용할 변수
                 }
                 else
                 {
                     customProperties.Add("IsLiar", false); // 변경할 속성 추가
                     customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                    customProperties.Add("IsVote", false); // 투표에서 사용할 변수
                 }
 
                 // SetCustomProperties 메서드를 사용하여 커스텀 속성을 설정
