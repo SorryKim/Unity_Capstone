@@ -131,23 +131,14 @@ public class GameSystem : MonoBehaviourPunCallbacks
                 players[i].SetCustomProperties(customProperties);
             }
 
-            // 위에서 설정된 정보를 모두와 동기화
-            photonView.RPC("SendSetting", RpcTarget.All, players, commentStartIdx, liarIdx);
-        }
-        
+        }     
         // 5초 대기
         yield return new WaitForSeconds(5f);
         loadingPanel.SetActive(false);
     }
 
-    // 변수 동기화
-    [PunRPC]
-    public void SendSetting(Player[] list, int commentStartIdx, int liarIdx)
-    {
-        players = list;
-        this.commentStartIdx = commentStartIdx;
-        this.liarIdx = liarIdx;
-    }
+
+    
 
     // 주제어를 선택한 경우
     public void OnClickWord()
@@ -155,9 +146,9 @@ public class GameSystem : MonoBehaviourPunCallbacks
         // 현재 클릭된 버튼
         GameObject clickObject = EventSystem.current.currentSelectedGameObject;
         selectedTheme = clickObject.GetComponentInChildren<TMP_Text>().text.ToString();
-        string s = parseJson();
+        string ans = parseJson();
         // 정답단어를 모두에게 전달
-        photonView.RPC("SetAnswer", RpcTarget.AllBuffered, s, selectedTheme);
+        photonView.RPC("SetAnswer", RpcTarget.All, ans, selectedTheme);
         // 주제패널 or 주제대기 패널 비활성화
         photonView.RPC("SelectComplete", RpcTarget.All);
     }
@@ -206,6 +197,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     // 10초동안 확인하는 코루틴
     IEnumerator ExecuteAfterDelay()
     {
+
         bool isLiar = false;
         word.text = answer;
         themeText1.text = "주제: " + selectedTheme;
@@ -219,6 +211,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             Debug.Log(player.NickName + "의 라이어 여부: " + player.CustomProperties["IsLiar"] );
         }
+
+        yield return new WaitForSeconds(2f);
         if (isLiar)
         {
             liarPanel.SetActive(true);
