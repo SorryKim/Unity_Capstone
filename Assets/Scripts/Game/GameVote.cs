@@ -12,7 +12,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 {
     public static GameVote instance;
     public GameObject[] voteList;
-    public GameObject votePanel;
+    public GameObject votePanel, reVotePanel;
     public Button[] voteButtons;
     public bool isVoteStart;
 
@@ -31,6 +31,16 @@ public class GameVote : MonoBehaviourPunCallbacks
     public void StartVote()
     {
         isVoteStart = true;
+        Player player = PhotonNetwork.LocalPlayer;
+
+        // 기존 CustomProperties를 가져옴
+        Hashtable customProperties = player.CustomProperties;
+        
+        // 업데이트된 값을 다시 CustomProperties에 저장
+        customProperties["VoteCount"] = 0;
+        customProperties["IsVote"] = false;
+        player.SetCustomProperties(customProperties);
+        
         StartCoroutine(VoteRoutine());
     }
 
@@ -47,6 +57,7 @@ public class GameVote : MonoBehaviourPunCallbacks
             {
                 voteList[i].SetActive(true);
                 voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
+                voteList[i].transform.Find("Button").gameObject.SetActive(true);
                 Transform buttonTransform = voteList[i].transform.Find("Button");
                 int idx = i;
                 buttonTransform.GetComponent<Button>().onClick.AddListener(() => OnVoteClick(players[idx].NickName));
@@ -66,6 +77,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 
         // VotePanel 비활성화
         votePanel.SetActive(false);
+        EndVote();
     }
 
     public void OnVoteClick(string buttonNickName)
@@ -98,6 +110,50 @@ public class GameVote : MonoBehaviourPunCallbacks
         // 업데이트된 값을 다시 CustomProperties에 저장
         customProperty["IsVote"] = true;
         temp.SetCustomProperties(customProperty);
+
+    }
+
+    void EndVote()
+    {
+        int max = 0;
+        Player[] players = PhotonNetwork.PlayerList;
+        List<Player> list = new List<Player>();
+      
+        foreach (Player player in players)
+        {
+            int temp = (int)player.CustomProperties["VoteCount"];
+            
+            // 최다표를 받은 경우
+            if(temp > max)
+            {
+                list.Clear();
+                list.Add(player);
+            }
+            // 동률인 경우
+            else if(temp == max)
+            {
+                list.Add(player);
+            }
+        }
+
+        // 과반수도 아니고 동률인 경우
+        if(max < players.Length || list.Count >=2)
+        {
+            StartCoroutine(ReVote());     
+        }
+        else
+        {
+            //최종 반론 시작
+        }
+    }
+
+    IEnumerator ReVote()
+    {
+        reVotePanel.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        reVotePanel.SetActive(false);
+        // 투표 재시작
+        StartVote();
 
     }
     void Update()
