@@ -25,10 +25,15 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public TMP_Text roleCheckText, themeText1, themeText2;
     public int commentStartIdx;
     public int liarIdx;
+    public RawImage playerimage;
+    public Sprite[] playerImages;
+    public RawImage liarimage;
+    public Sprite[] liarImages;
 
 
-    
-# region 게임 정답 관련 변수
+
+
+    #region 게임 정답 관련 변수
     public string answer;
     public string selectedTheme;
     public TextAsset jsonData;
@@ -151,7 +156,10 @@ public class GameSystem : MonoBehaviourPunCallbacks
         photonView.RPC("SetAnswer", RpcTarget.All, ans, selectedTheme);
         // 주제패널 or 주제대기 패널 비활성화
         photonView.RPC("SelectComplete", RpcTarget.All);
+
+
     }
+
 
     // 해당 주제에 맞는 단어를 JSON에서 가져오기
     public string parseJson()
@@ -194,10 +202,11 @@ public class GameSystem : MonoBehaviourPunCallbacks
         else roleCheckText.text = "제시어: " + answer;
     }
 
+
     // 10초동안 확인하는 코루틴
     IEnumerator ExecuteAfterDelay()
     {
-
+        int userIndex = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % 8; 
         bool isLiar = false;
         word.text = answer;
         themeText1.text = "주제: " + selectedTheme;
@@ -217,11 +226,13 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             liarPanel.SetActive(true);
             noLiarPanel.SetActive(false);
+            liarimage.texture = SpriteToTexture(liarImages[userIndex]);
         }
         else
         {
             liarPanel.SetActive(false);
             noLiarPanel.SetActive(true);
+            playerimage.texture = SpriteToTexture(playerImages[userIndex]);
         }
 
         yield return new WaitForSeconds(10);
@@ -237,5 +248,14 @@ public class GameSystem : MonoBehaviourPunCallbacks
         gameComment.CommentStart();
     }
     #endregion
+
+    private Texture2D SpriteToTexture(Sprite sprite)
+    {
+        Texture2D texture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+        texture.SetPixels(sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y,
+            (int)sprite.rect.width, (int)sprite.rect.height));
+        texture.Apply();
+        return texture;
+    }
 
 }

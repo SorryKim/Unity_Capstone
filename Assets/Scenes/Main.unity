@@ -23565,6 +23565,26 @@ MonoBehaviour:
   themeText2: {fileID: 1563684475}
   commentStartIdx: 0
   liarIdx: 0
+  playerimage: {fileID: 1106326486}
+  playerImages:
+  - {fileID: 21300000, guid: 185cfd8ddfc4e89409711cb0f85b439e, type: 3}
+  - {fileID: 21300000, guid: ebd1f0a0a831a174f83d43b240bf701e, type: 3}
+  - {fileID: 21300000, guid: 4ecba42e534df224489a8874ced5f5f5, type: 3}
+  - {fileID: 21300000, guid: a50b7ba741021ff45869aa1fcaea846c, type: 3}
+  - {fileID: 21300000, guid: dc198f53c1933244eb3d7e01213233a7, type: 3}
+  - {fileID: 21300000, guid: d32a3e21abcbc634dab22cba724f5967, type: 3}
+  - {fileID: 21300000, guid: c52d7e3bf10859248a166386b6765db8, type: 3}
+  - {fileID: 21300000, guid: c9c326159c2a6fd4bb09d273a1366a38, type: 3}
+  liarimage: {fileID: 1064318077}
+  liarImages:
+  - {fileID: 21300000, guid: 4467131264760f34ea378cca0896c330, type: 3}
+  - {fileID: 21300000, guid: d19c23df470025549b9b3426e589d545, type: 3}
+  - {fileID: 21300000, guid: d6a57537e3809724d9fc31a35b22ab54, type: 3}
+  - {fileID: 21300000, guid: 8d6c898967f37e14caa76e01a18a8252, type: 3}
+  - {fileID: 21300000, guid: 8a856c548e2ad5c48a95979761502881, type: 3}
+  - {fileID: 21300000, guid: 34ab1d9ffcce4f94c8863c454e84824f, type: 3}
+  - {fileID: 21300000, guid: a78ba361ef8e39448944b4dfcb39a9b3, type: 3}
+  - {fileID: 21300000, guid: bb10a93984891504fa0ee5fb6f69bec7, type: 3}
   answer: 
   selectedTheme: 
   jsonData: {fileID: 4900000, guid: 4ebef333ac32b64409ba457080cc45b9, type: 3}
