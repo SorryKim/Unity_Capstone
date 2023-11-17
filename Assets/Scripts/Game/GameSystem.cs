@@ -22,12 +22,12 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public Button startBtn;
     public Text word;
     public Player[] players;
-    public TMP_Text roleCheckText;
+    public TMP_Text roleCheckText, themeText1, themeText2;
     public int commentStartIdx;
     public int liarIdx;
 
 
-    private bool isLiar = false;
+    
 # region 게임 정답 관련 변수
     public string answer;
     public string selectedTheme;
@@ -66,7 +66,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         }
         gameComment = GetComponent<GameComment>();
         gameManager = GetComponent<GameManager>();
-        isLiar = false;
+        
     }
 
 
@@ -157,7 +157,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         selectedTheme = clickObject.GetComponentInChildren<TMP_Text>().text.ToString();
         string s = parseJson();
         // 정답단어를 모두에게 전달
-        photonView.RPC("SetAnswer", RpcTarget.AllBuffered, s);
+        photonView.RPC("SetAnswer", RpcTarget.AllBuffered, s, selectedTheme);
         // 주제패널 or 주제대기 패널 비활성화
         photonView.RPC("SelectComplete", RpcTarget.All);
     }
@@ -181,9 +181,10 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     // 정답단어를 모두에게 전달
     [PunRPC]
-    void SetAnswer(string str)
+    void SetAnswer(string answer, string selectedTheme)
     {
-        this.answer = str;
+        this.answer = answer;
+        this.selectedTheme = selectedTheme;
     }
 
     // 방장이 단어선택을 마친 경우
@@ -207,6 +208,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
     {
         bool isLiar = false;
         word.text = answer;
+        themeText1.text = "주제: " + selectedTheme;
+        themeText2.text = "주제: " + selectedTheme;
         if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("IsLiar"))
         {
             isLiar = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLiar"];
