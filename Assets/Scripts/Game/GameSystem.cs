@@ -22,13 +22,18 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public Button startBtn;
     public Text word;
     public Player[] players;
-    public TMP_Text roleCheckText;
+    public TMP_Text roleCheckText, themeText1, themeText2;
     public int commentStartIdx;
     public int liarIdx;
+    public RawImage playerimage;
+    public Sprite[] playerImages;
+    public RawImage liarimage;
+    public Sprite[] liarImages;
 
 
-    private bool isLiar = false;
-# region 게임 정답 관련 변수
+
+
+    #region 게임 정답 관련 변수
     public string answer;
     public string selectedTheme;
     public TextAsset jsonData;
@@ -66,7 +71,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         }
         gameComment = GetComponent<GameComment>();
         gameManager = GetComponent<GameManager>();
-        isLiar = false;
+        
     }
 
 
@@ -118,34 +123,27 @@ public class GameSystem : MonoBehaviourPunCallbacks
                 {
                     customProperties.Add("IsLiar", true); // 변경할 속성 추가
                     customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                    customProperties.Add("IsVote", false); // 투표에서 사용할 변수
                 }
                 else
                 {
                     customProperties.Add("IsLiar", false); // 변경할 속성 추가
                     customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                    customProperties.Add("IsVote", false); // 투표에서 사용할 변수
                 }
 
                 // SetCustomProperties 메서드를 사용하여 커스텀 속성을 설정
                 players[i].SetCustomProperties(customProperties);
             }
 
-            // 위에서 설정된 정보를 모두와 동기화
-            photonView.RPC("SendSetting", RpcTarget.All, players, commentStartIdx, liarIdx);
-        }
-        
+        }     
         // 5초 대기
         yield return new WaitForSeconds(5f);
         loadingPanel.SetActive(false);
     }
 
-    // 변수 동기화
-    [PunRPC]
-    public void SendSetting(Player[] list, int commentStartIdx, int liarIdx)
-    {
-        players = list;
-        this.commentStartIdx = commentStartIdx;
-        this.liarIdx = liarIdx;
-    }
+
+    
 
     // 주제어를 선택한 경우
     public void OnClickWord()
@@ -153,12 +151,15 @@ public class GameSystem : MonoBehaviourPunCallbacks
         // 현재 클릭된 버튼
         GameObject clickObject = EventSystem.current.currentSelectedGameObject;
         selectedTheme = clickObject.GetComponentInChildren<TMP_Text>().text.ToString();
-        string s = parseJson();
+        string ans = parseJson();
         // 정답단어를 모두에게 전달
-        photonView.RPC("SetAnswer", RpcTarget.AllBuffered, s);
+        photonView.RPC("SetAnswer", RpcTarget.All, ans, selectedTheme);
         // 주제패널 or 주제대기 패널 비활성화
         photonView.RPC("SelectComplete", RpcTarget.All);
+
+
     }
+
 
     // 해당 주제에 맞는 단어를 JSON에서 가져오기
     public string parseJson()
@@ -179,9 +180,10 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     // 정답단어를 모두에게 전달
     [PunRPC]
-    void SetAnswer(string str)
+    void SetAnswer(string answer, string selectedTheme)
     {
-        this.answer = str;
+        this.answer = answer;
+        this.selectedTheme = selectedTheme;
     }
 
     // 방장이 단어선택을 마친 경우
@@ -200,11 +202,15 @@ public class GameSystem : MonoBehaviourPunCallbacks
         else roleCheckText.text = "제시어: " + answer;
     }
 
+
     // 10초동안 확인하는 코루틴
     IEnumerator ExecuteAfterDelay()
     {
+        int userIndex = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % 8; 
         bool isLiar = false;
         word.text = answer;
+        themeText1.text = "주제: " + selectedTheme;
+        themeText2.text = "주제: " + selectedTheme;
         if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("IsLiar"))
         {
             isLiar = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLiar"];
@@ -214,15 +220,19 @@ public class GameSystem : MonoBehaviourPunCallbacks
         {
             Debug.Log(player.NickName + "의 라이어 여부: " + player.CustomProperties["IsLiar"] );
         }
+
+        yield return new WaitForSeconds(2f);
         if (isLiar)
         {
             liarPanel.SetActive(true);
             noLiarPanel.SetActive(false);
+            liarimage.texture = SpriteToTexture(liarImages[userIndex]);
         }
         else
         {
             liarPanel.SetActive(false);
             noLiarPanel.SetActive(true);
+            playerimage.texture = SpriteToTexture(playerImages[userIndex]);
         }
 
         yield return new WaitForSeconds(10);
@@ -238,5 +248,14 @@ public class GameSystem : MonoBehaviourPunCallbacks
         gameComment.CommentStart();
     }
     #endregion
+
+    private Texture2D SpriteToTexture(Sprite sprite)
+    {
+        Texture2D texture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+        texture.SetPixels(sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y,
+            (int)sprite.rect.width, (int)sprite.rect.height));
+        texture.Apply();
+        return texture;
+    }
 
 }

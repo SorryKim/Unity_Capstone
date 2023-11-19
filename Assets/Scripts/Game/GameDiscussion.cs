@@ -9,7 +9,7 @@ public class GameDiscussion : MonoBehaviour
     public Transform targetLocation; // 이동시킬 대상 장소
     public static GameDiscussion instance;
     private PhotonView pv;
-
+    public GameObject DiscussionPanel;
     public GameVote gameVote;
 
     private void Awake()
@@ -46,8 +46,17 @@ public class GameDiscussion : MonoBehaviour
         // 대기와 대기화면 구성 필요
 
         // 투표 시작
-        gameVote.StartVote();
+        StartCoroutine(Dicussion());
     }
 
+    IEnumerator Dicussion()
+    {
+        DiscussionPanel.SetActive(true);
+        yield return new WaitForSeconds(5f);
+        DiscussionPanel.SetActive(false);
+
+        yield return new WaitForSeconds(60f);
+        gameVote.StartVote();
+    }
    
 }

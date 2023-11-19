@@ -26,18 +26,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text roomInfo;
     public Text[] chatText, userList;
     public Text GameStart;
+    
 
     private PhotonView pv;
-    public bool[] colorNum;
-
-    public List<Player> players;
 
 
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
         gameSystem = GetComponent<GameSystem>();
-        players = new List<Player>();
     }
 
     void Start()
@@ -74,11 +71,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        players.Add(newPlayer);
         RoomRenewal();
         ChatRPC("<color=red>" + newPlayer.NickName + "님이 참가하셨습니다</color>");
-
-     
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -121,10 +115,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         Player[] playerArr = PhotonNetwork.PlayerList;
         foreach (var player in playerArr)
         {
+            player.Score = "0";
             if (player.IsMasterClient)
-                userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>";
+                userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>" + "/ " + player.Score + "점";
             else
-                userList[idx].text = player.NickName;
+                userList[idx].text = player.NickName + "/ " + player.Score + "점"; ;
             idx++;
         }
     }
