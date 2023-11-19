@@ -20,7 +20,7 @@ public class GameComment : MonoBehaviourPunCallbacks
 
     private bool enterPressed = false;
 
-    public float commentDuration = 10f; // comment() 호출을 유지하는 시간
+    public float commentDuration = 30f; // comment() 호출을 유지하는 시간
 
     private int currentPlayerIndex; // 현재 순서에 있는 플레이어의 인덱스
     private int startIndex;
@@ -80,7 +80,7 @@ public class GameComment : MonoBehaviourPunCallbacks
             }
 
             float timer = 0f;
-            while(timer <10f && !enterPressed)
+            while(timer < commentDuration && !enterPressed)
             {
                 timer += Time.deltaTime;
                 yield return null;
