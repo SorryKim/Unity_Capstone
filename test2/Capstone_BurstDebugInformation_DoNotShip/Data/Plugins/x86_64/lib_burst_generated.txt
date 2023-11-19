@@ -32,9 +32,11 @@ Library: C:\project\capstone_2\Unity_Capstone\Temp\BurstOutput\Data\Plugins\x86_
 --assembly-defines=Cinemachine;
 --assembly-defines=Unity.Collections.LowLevel.ILSupport;
 --assembly-defines=websocket-sharp;
+--assembly-defines=LitJson;
 --assembly-defines=Unity.VisualScripting.Antlr3.Runtime;
 --assembly-defines=Photon3Unity3D;
 --assembly-defines=Unity.Burst.Unsafe;
+--assembly-defines=Newtonsoft.Json;
 --assembly-defines=System.Runtime;
 --assembly-defines=netstandard;
 --assembly-defines=Mono.Security;
@@ -129,9 +131,11 @@ Library: C:\project\capstone_2\Unity_Capstone\Temp\BurstOutput\Data\Plugins\x86_
 --assembly-defines=Cinemachine;
 --assembly-defines=Unity.Collections.LowLevel.ILSupport;
 --assembly-defines=websocket-sharp;
+--assembly-defines=LitJson;
 --assembly-defines=Unity.VisualScripting.Antlr3.Runtime;
 --assembly-defines=Photon3Unity3D;
 --assembly-defines=Unity.Burst.Unsafe;
+--assembly-defines=Newtonsoft.Json;
 --assembly-defines=System.Runtime;
 --assembly-defines=netstandard;
 --assembly-defines=Mono.Security;

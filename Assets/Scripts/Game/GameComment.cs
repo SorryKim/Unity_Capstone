@@ -18,7 +18,8 @@ public class GameComment : MonoBehaviourPunCallbacks
     GameDiscussion gameDiscussion;
     public static GameComment instance;
 
-  
+    private bool enterPressed = false;
+
     public float commentDuration = 10f; // comment() 호출을 유지하는 시간
 
     private int currentPlayerIndex; // 현재 순서에 있는 플레이어의 인덱스
@@ -43,7 +44,11 @@ public class GameComment : MonoBehaviourPunCallbacks
 
     private void Update()
     {
- 
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            enterPressed = true;
+        }
+
     }
     #region 순서대로 코멘트
 
@@ -74,11 +79,19 @@ public class GameComment : MonoBehaviourPunCallbacks
                 photonView.RPC("ShowWaitPanel", player);
             }
 
-            yield return new WaitForSeconds(10f);
-
-            photonView.RPC("EndCommenting", RpcTarget.All, currentPlayerIndex);
-            photonView.RPC("HideAllPanels", RpcTarget.All);
-            currentPlayerIndex++;
+            float timer = 0f;
+            while(timer <10f && !enterPressed)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            if(enterPressed || timer >= 10f)
+            {
+                enterPressed = false;
+                photonView.RPC("EndCommenting", RpcTarget.All, currentPlayerIndex);
+                photonView.RPC("HideAllPanels", RpcTarget.All);
+                currentPlayerIndex++;
+            }
         }
 
         currentPlayerIndex = 0;
@@ -95,11 +108,19 @@ public class GameComment : MonoBehaviourPunCallbacks
                 photonView.RPC("ShowWaitPanel", player);
             }
 
-            yield return new WaitForSeconds(10f);
-
-            photonView.RPC("EndCommenting", RpcTarget.All, currentPlayerIndex);
-            photonView.RPC("HideAllPanels", RpcTarget.All);
-            currentPlayerIndex++;
+            float timer = 0f;
+            while (timer < 10f && !enterPressed)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            if (enterPressed || timer >= 10f)
+            {
+                enterPressed = false;
+                photonView.RPC("EndCommenting", RpcTarget.All, currentPlayerIndex);
+                photonView.RPC("HideAllPanels", RpcTarget.All);
+                currentPlayerIndex++;
+            }
         }
 
 

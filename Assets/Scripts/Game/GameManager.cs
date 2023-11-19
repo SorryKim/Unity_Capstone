@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text roomInfo;
     public Text[] chatText, userList;
     public Text GameStart;
+    
 
     private PhotonView pv;
 
