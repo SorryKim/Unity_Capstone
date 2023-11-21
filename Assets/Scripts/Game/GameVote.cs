@@ -11,6 +11,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class GameVote : MonoBehaviourPunCallbacks
 {
     public static GameVote instance;
+    public GameLast gameLast;
     public GameObject[] voteList;
     public GameObject votePanel, reVotePanel;
     public Button[] voteButtons;
@@ -24,7 +25,7 @@ public class GameVote : MonoBehaviourPunCallbacks
     void Start()
     {
         isVoteStart = false;
-        
+        gameLast = GetComponent<GameLast>();
     }
 
 
@@ -136,15 +137,18 @@ public class GameVote : MonoBehaviourPunCallbacks
             }
         }
 
-        // 과반수도 아니고 동률인 경우
-        if(max < players.Length || list.Count >=2)
-        {
-            StartCoroutine(ReVote());     
-        }
-        else
-        {
-            //최종 반론 시작
-        }
+        gameLast.StartLast(list[0]);
+
+        //// 과반수도 아니고 동률인 경우
+        //if(max < players.Length || list.Count >=2)
+        //{
+        //    StartCoroutine(ReVote());     
+        //}
+        //else
+        //{
+        //    //최종 반론 시작
+        //    gameLast.StartLast(list[0]);
+        //}
     }
 
     IEnumerator ReVote()
