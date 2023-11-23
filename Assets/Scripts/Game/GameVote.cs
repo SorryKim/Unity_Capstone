@@ -191,6 +191,7 @@ public class GameVote : MonoBehaviourPunCallbacks
     {
         if (isVoteStart)
         {
+            players = PhotonNetwork.PlayerList;
             for (int i = 0; i < players.Length; i++)
             {
                 Player player = players[i];

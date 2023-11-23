@@ -3327,7 +3327,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 198293836}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1673597576}
+        m_TargetAssemblyTypeName: GameLastVote, Assembly-CSharp
+        m_MethodName: OnClickNoBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &198293836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15258,7 +15270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1136109847
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17239,7 +17251,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1335823382}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1673597576}
+        m_TargetAssemblyTypeName: GameLastVote, Assembly-CSharp
+        m_MethodName: OnClickYesBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1335823382
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27212,6 +27236,7 @@ GameObject:
   - component: {fileID: 1673597573}
   - component: {fileID: 1673597574}
   - component: {fileID: 1673597575}
+  - component: {fileID: 1673597576}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -27444,10 +27469,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096a0e9009159e441b0bf23248c795a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameLastVote: {fileID: 0}
   lastCommentPanel: {fileID: 1333022883}
   lastCommentWaitPanel: {fileID: 220298396}
   lastCommentInput: {fileID: 503608516}
   lastComment: {fileID: 1295682964}
+--- !u!114 &1673597576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673597567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ada03ded7029b9042a6e724443133778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  yesCnt: 0
+  noCnt: 0
+  yesBtn: {fileID: 1335823381}
+  noBtn: {fileID: 198293835}
+  trueLiarPanel: {fileID: 1576797431}
+  falseLiarPanel: {fileID: 1914634009}
+  lastVotePanel: {fileID: 1136109846}
 --- !u!1 &1678983710
 GameObject:
   m_ObjectHideFlags: 0
@@ -28955,19 +29000,7 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1673597572}
-        m_TargetAssemblyTypeName: GameComment, Assembly-CSharp
-        m_MethodName: CommentSend
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -28985,7 +29018,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1673597572}
+        m_TargetAssemblyTypeName: GameComment, Assembly-CSharp
+        m_MethodName: CommentSend
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []

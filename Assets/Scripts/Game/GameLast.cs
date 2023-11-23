@@ -9,16 +9,17 @@ using UnityEngine.UI;
 
 public class GameLast : MonoBehaviourPunCallbacks
 {
-
+    public GameLastVote gameLastVote;
     public GameObject lastCommentPanel;
     public GameObject lastCommentWaitPanel;
     public TMP_InputField lastCommentInput;
     public Text lastComment;
 
+    public Player candidate;
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameLastVote = GetComponent<GameLastVote>();
     }
 
     void Update()
@@ -28,6 +29,7 @@ public class GameLast : MonoBehaviourPunCallbacks
 
     public void StartLast(Player candidate)
     {
+        this.candidate = candidate;
         Player player = PhotonNetwork.LocalPlayer;
         lastCommentWaitPanel.transform.Find("Title").GetComponent<TMP_Text>().text = player.NickName + "님의 최후의 변론...";
         // 최종후보인 경우
@@ -54,6 +56,7 @@ public class GameLast : MonoBehaviourPunCallbacks
     public void SendLastCommentRPC(string msg)
     {
         lastComment.text = msg;
+        gameLastVote.StartLastVote(candidate);
     }
     #endregion
 }

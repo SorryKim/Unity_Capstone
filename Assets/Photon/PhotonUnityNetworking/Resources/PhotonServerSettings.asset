@@ -74,6 +74,8 @@ MonoBehaviour:
   - SendLastCommentRPC
   - GoLast
   - ReVoteRPC
+  - NoBtnRPC
+  - YesBtnRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
