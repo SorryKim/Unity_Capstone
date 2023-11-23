@@ -7,7 +7,7 @@ public class Timer : MonoBehaviour
 {
     public float timerDuration = 10.0f; // 타이머 기간(초)
     public float currentTime; // 현재 시간
-    private Text timerText;
+    public Text timerText;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +36,7 @@ public class Timer : MonoBehaviour
         int seconds = Mathf.FloorToInt(currentTime % 60);
 
         // 거꾸로 출력
-        timerText.text = ReverseString(seconds.ToString());
+        timerText.text = seconds.ToString();
     }
 
     // 문자열을 거꾸로 만드는 함수
