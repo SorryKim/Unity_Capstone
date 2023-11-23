@@ -72,6 +72,8 @@ MonoBehaviour:
   - MoveToTargetLocationRPC
   - RPCDiscussion
   - SendLastCommentRPC
+  - GoLast
+  - ReVoteRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

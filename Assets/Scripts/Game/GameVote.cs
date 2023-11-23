@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -16,6 +18,9 @@ public class GameVote : MonoBehaviourPunCallbacks
     public GameObject votePanel, reVotePanel;
     public Button[] voteButtons;
     public bool isVoteStart;
+    public float voteTime;
+
+    private Player[] players;
 
     private void Awake()
     {
@@ -31,21 +36,23 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     public void StartVote()
     {
+       
         isVoteStart = true;
         Player player = PhotonNetwork.LocalPlayer;
-
         // 기존 CustomProperties를 가져옴
         Hashtable customProperties = player.CustomProperties;
-        
+
         // 업데이트된 값을 다시 CustomProperties에 저장
         customProperties["VoteCount"] = 0;
         customProperties["IsVote"] = false;
         player.SetCustomProperties(customProperties);
-        
+
         StartCoroutine(VoteRoutine());
     }
 
     private IEnumerator VoteRoutine() {
+
+        yield return new WaitForSeconds(2f);
 
         // VotePanel 활성화
         votePanel.SetActive(true);
@@ -74,7 +81,7 @@ public class GameVote : MonoBehaviourPunCallbacks
         }
 
         // 30초 대기
-        yield return new WaitForSeconds(30f);
+        yield return new WaitForSeconds(voteTime);
 
         // VotePanel 비활성화
         votePanel.SetActive(false);
@@ -116,41 +123,53 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     void EndVote()
     {
-        int max = 0;
-        Player[] players = PhotonNetwork.PlayerList;
-        List<Player> list = new List<Player>();
-      
-        foreach (Player player in players)
+        List<Player> list = new List<Player> ();
+        if (PhotonNetwork.IsMasterClient)
         {
-            int temp = (int)player.CustomProperties["VoteCount"];
-            
-            // 최다표를 받은 경우
-            if(temp > max)
+            int maxV = 0;
+
+            foreach(Player player in players)
             {
-                list.Clear();
-                list.Add(player);
+                int nowCnt = (int)player.CustomProperties["VoteCount"];
+                //투표최댓값인 경우
+                if(nowCnt > maxV)
+                {
+                    maxV = nowCnt;
+                    list.Clear();
+                    list.Add(player);
+                }else if(nowCnt == maxV)
+                {
+                    list.Add(player);
+                }
             }
-            // 동률인 경우
-            else if(temp == max)
+
+            if(list.Count >= 2)
             {
-                list.Add(player);
+                photonView.RPC("ReVoteRPC", RpcTarget.All);
+            }else if(list.Count == 1)
+            {
+                int temp = (int)list[0].CustomProperties["VoteCount"];
+                if(temp >= players.Length / 2)
+                {
+                    photonView.RPC("GoLast", RpcTarget.All, list[0]);
+                }
+                else
+                {
+                    photonView.RPC("ReVoteRPC", RpcTarget.All);
+                }
+            }
+            else
+            {
+                photonView.RPC("ReVoteRPC", RpcTarget.All);
             }
         }
-
-        gameLast.StartLast(list[0]);
-
-        //// 과반수도 아니고 동률인 경우
-        //if(max < players.Length || list.Count >=2)
-        //{
-        //    StartCoroutine(ReVote());     
-        //}
-        //else
-        //{
-        //    //최종 반론 시작
-        //    gameLast.StartLast(list[0]);
-        //}
     }
 
+    [PunRPC]
+    void ReVoteRPC()
+    {
+        StartCoroutine(ReVote());
+    }
     IEnumerator ReVote()
     {
         reVotePanel.SetActive(true);
@@ -160,11 +179,18 @@ public class GameVote : MonoBehaviourPunCallbacks
         StartVote();
 
     }
+
+    [PunRPC]
+    void GoLast(Player player)
+    {
+        gameLast.StartLast(player);
+    }
+
+
     void Update()
     {
         if (isVoteStart)
         {
-            Player[] players = PhotonNetwork.PlayerList;
             for (int i = 0; i < players.Length; i++)
             {
                 Player player = players[i];
@@ -179,12 +205,19 @@ public class GameVote : MonoBehaviourPunCallbacks
                 // 투표한 경우 투표표시
                 if (isVote)
                     voteObject.transform.Find("Isvote").gameObject.SetActive(true);
+                else
+                    voteObject.transform.Find("Isvote").gameObject.SetActive(false);
 
                 if (votersTransform != null)
                 {
                     for(int j = 0; j < cnt; j++)
                     {
                         votersTransform.GetChild(j).gameObject.SetActive(true);
+                    }
+
+                    for(int j = cnt; j < 8; j++)
+                    {
+                        votersTransform.GetChild(j).gameObject.SetActive(false);
                     }
                 }
                 else
