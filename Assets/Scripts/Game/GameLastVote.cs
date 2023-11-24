@@ -7,17 +7,21 @@ using UnityEngine.UI;
 
 public class GameLastVote : MonoBehaviourPunCallbacks
 {
-    public int yesCnt;
-    public int noCnt;
+    public GameVote gameVote;
 
     public Button yesBtn, noBtn;
     public GameObject trueLiarPanel, falseLiarPanel, lastVotePanel;
+
+    public int yesCnt;
+    public int noCnt;
+    public Text trueText, falseText;
 
     private bool isLiar;
     
 
     void Start()
     {
+        gameVote = GetComponent<GameVote>();
         yesCnt = 0;
         noCnt = 0;
     }
@@ -25,8 +29,9 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     public void StartLastVote(Player candidate)
     {
         isLiar = (bool)candidate.CustomProperties["IsLiar"];
-
-
+        lastVotePanel.SetActive(true);
+        falseText.text = candidate.NickName + "님은 <color=red>라이어</color>가 아닙니다.";
+        trueText.text = candidate.NickName + "님은 <color=red>라이어</color>가 맞습니다.";
     }
 
     // Update is called once per frame
@@ -49,7 +54,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
             }
             else
             {
-                // 투표부터 다시 시작
+                gameVote.StartVote();
             }
         }
     }

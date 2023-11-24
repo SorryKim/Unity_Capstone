@@ -16,6 +16,9 @@ public class GameLast : MonoBehaviourPunCallbacks
     public Text lastComment;
 
     public Player candidate;
+
+    public float LastTime;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,18 +33,26 @@ public class GameLast : MonoBehaviourPunCallbacks
     public void StartLast(Player candidate)
     {
         this.candidate = candidate;
+        lastCommentWaitPanel.transform.Find("Title").GetComponent<TMP_Text>().text = candidate.NickName + "님의 최후의 변론...";
+
+        StartCoroutine(LastVoteRoutine(candidate));
+    }
+
+    IEnumerator LastVoteRoutine(Player candidate)
+    {
         Player player = PhotonNetwork.LocalPlayer;
-        lastCommentWaitPanel.transform.Find("Title").GetComponent<TMP_Text>().text = player.NickName + "님의 최후의 변론...";
         // 최종후보인 경우
         if (player.Equals(candidate))
-        {
             lastCommentPanel.SetActive(true);
-        }
         // 나머지 플레이어들
         else
-        {
             lastCommentWaitPanel.SetActive(true);
-        }
+
+        yield return new WaitForSeconds(LastTime);
+
+        lastCommentPanel.SetActive(false);
+        lastCommentWaitPanel.SetActive(false);
+        gameLastVote.StartLastVote(candidate);
     }
 
 
@@ -56,7 +67,6 @@ public class GameLast : MonoBehaviourPunCallbacks
     public void SendLastCommentRPC(string msg)
     {
         lastComment.text = msg;
-        gameLastVote.StartLastVote(candidate);
     }
     #endregion
 }
