@@ -20,8 +20,7 @@ public class GameVote : MonoBehaviourPunCallbacks
     public bool isVoteStart;
     public float voteTime;
 
-    private Player[] players;
-
+ 
     private void Awake()
     {
         instance = this;
@@ -36,17 +35,28 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     public void StartVote()
     {
+        isVoteStart = false;
+        StartCoroutine(VoteSetting());
        
-        isVoteStart = true;
-        Player player = PhotonNetwork.LocalPlayer;
-        // 기존 CustomProperties를 가져옴
-        Hashtable customProperties = player.CustomProperties;
+    }
 
-        // 업데이트된 값을 다시 CustomProperties에 저장
-        customProperties["VoteCount"] = 0;
-        customProperties["IsVote"] = false;
-        player.SetCustomProperties(customProperties);
+    IEnumerator VoteSetting()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            foreach(Player player in PhotonNetwork.PlayerList)
+            {
+                // 기존 CustomProperties를 가져옴
+                Hashtable customProperties = player.CustomProperties;
 
+                // 업데이트된 값을 다시 CustomProperties에 저장
+                customProperties["VoteCount"] = 0;
+                customProperties["IsVote"] = false;
+                player.SetCustomProperties(customProperties);
+            }
+        }
+
+        yield return new WaitForSeconds(2f);
         StartCoroutine(VoteRoutine());
     }
 
@@ -54,6 +64,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(2f);
 
+        isVoteStart = true;
         // VotePanel 활성화
         votePanel.SetActive(true);
         Player[] players = PhotonNetwork.PlayerList;
@@ -73,7 +84,6 @@ public class GameVote : MonoBehaviourPunCallbacks
             // 자신의 공간일 경우 버튼칸은 비활성화인 상태로 생성
             else
             {
-                
                 voteList[i].SetActive(true);
                 voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
                 voteList[i].transform.Find("Button").gameObject.SetActive(false);
@@ -123,6 +133,8 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     void EndVote()
     {
+        votePanel.SetActive(false);
+        Player[] players = PhotonNetwork.PlayerList;
         List<Player> list = new List<Player> ();
         if (PhotonNetwork.IsMasterClient)
         {
@@ -191,7 +203,7 @@ public class GameVote : MonoBehaviourPunCallbacks
     {
         if (isVoteStart)
         {
-            players = PhotonNetwork.PlayerList;
+            Player[] players = PhotonNetwork.PlayerList;
             for (int i = 0; i < players.Length; i++)
             {
                 Player player = players[i];
