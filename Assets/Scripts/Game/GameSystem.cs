@@ -12,14 +12,15 @@ using LitJson;
 using Newtonsoft.Json;
 using System.IO.Pipes;
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 public class GameSystem : MonoBehaviourPunCallbacks
 {
     public static GameSystem instance;
     public GameComment gameComment;
     public GameManager gameManager;
-    public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel, checkPanel, loadingPanel;
-    public Button startBtn;
+    public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel, checkPanel, loadingPanel, settingPanel;
+    public Button startBtn, settingBtn;
     public Text word;
     public Player[] players;
     public TMP_Text roleCheckText, themeText1, themeText2;
@@ -91,7 +92,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
         userListPanel.SetActive(false);
         chatPanel.SetActive(false);
         loadingPanel.SetActive(true);
-        
+        settingBtn.gameObject.SetActive(false);
+
         // 기본 설정 시작
         StartCoroutine(StartSetting());
 
@@ -242,11 +244,24 @@ public class GameSystem : MonoBehaviourPunCallbacks
         checkPanel.SetActive(true);
         userListPanel.SetActive(true);
         chatPanel.SetActive(true);
+        settingBtn.gameObject.SetActive(true);
         SetCheckUI(isLiar);
 
         // 코멘트시작!
         gameComment.CommentStart();
     }
+
+    // 설정
+    public void OnClickSettingOn()
+    {
+        settingPanel.SetActive(true);
+    }
+
+    public void onClickSettingOff()
+    {
+        settingPanel.SetActive(false);
+    }
+
     #endregion
 
     private Texture2D SpriteToTexture(Sprite sprite)
