@@ -20,6 +20,11 @@ public class GameVote : MonoBehaviourPunCallbacks
     public bool isVoteStart;
     public float voteTime;
 
+    public RawImage[] player;
+
+    public Sprite[] players;
+
+
  
     private void Awake()
     {
@@ -77,6 +82,11 @@ public class GameVote : MonoBehaviourPunCallbacks
                 voteList[i].SetActive(true);
                 voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
                 voteList[i].transform.Find("Button").gameObject.SetActive(true);
+
+                Texture2D playerTexture = GetPlayerTextureByActorNumber(players[i].ActorNumber);
+                voteList[i].GetComponentInChildren<RawImage>().texture = playerTexture;
+
+
                 Transform buttonTransform = voteList[i].transform.Find("Button");
                 int idx = i;
                 buttonTransform.GetComponent<Button>().onClick.AddListener(() => OnVoteClick(players[idx].NickName));
@@ -87,6 +97,9 @@ public class GameVote : MonoBehaviourPunCallbacks
                 voteList[i].SetActive(true);
                 voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
                 voteList[i].transform.Find("Button").gameObject.SetActive(false);
+
+                Texture2D userTexture = GetPlayerTextureByActorNumber(PhotonNetwork.LocalPlayer.ActorNumber);
+                voteList[i].GetComponentInChildren<RawImage>().texture = userTexture;
             }
         }
 
@@ -96,6 +109,22 @@ public class GameVote : MonoBehaviourPunCallbacks
         // VotePanel 비활성화
         votePanel.SetActive(false);
         EndVote();
+    }
+    Texture2D GetPlayerTextureByActorNumber(int actorNumber)
+    {
+        int userIndex = (actorNumber- 1) % 8;
+        Sprite playerSprite = players[userIndex];
+
+        return SpriteToTexture(playerSprite);
+    }
+    Texture2D SpriteToTexture(Sprite sprite)
+    {
+        // Sprite를 Texture2D로 변환하는 코드
+        Texture2D texture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+        texture.SetPixels(sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y,
+                          (int)sprite.rect.width, (int)sprite.rect.height));
+        texture.Apply();
+        return texture;
     }
 
     public void OnVoteClick(string buttonNickName)
@@ -239,8 +268,10 @@ public class GameVote : MonoBehaviourPunCallbacks
                 }
 
             }
+
         }
     }
+
 
 
 }
