@@ -17,6 +17,8 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     public Text trueText, falseText;
 
     private bool isLiar;
+    private bool isEnd;
+    public List<Player> voters;
     
 
     void Start()
@@ -24,39 +26,25 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         gameVote = GetComponent<GameVote>();
         yesCnt = 0;
         noCnt = 0;
+        
     }
 
     public void StartLastVote(Player candidate)
     {
+        isEnd = false;
         isLiar = (bool)candidate.CustomProperties["IsLiar"];
         lastVotePanel.SetActive(true);
         falseText.text = candidate.NickName + "님은 <color=red>라이어</color>가 아닙니다.";
         trueText.text = candidate.NickName + "님은 <color=red>라이어</color>가 맞습니다.";
-    }
+        voters.Clear();
 
-    // Update is called once per frame
-    void Update()
-    {
-        int cnt = PhotonNetwork.PlayerList.Length;
-        if ((yesCnt + noCnt) == cnt)
+        foreach(Player player in PhotonNetwork.PlayerList)
         {
-            if(yesCnt >= (cnt / 2)){
-                if (isLiar)
-                {
-                    lastVotePanel.SetActive(false);
-                    trueLiarPanel.SetActive(true);
-                }
-                else
-                {
-                    lastVotePanel.SetActive(false);
-                    falseLiarPanel.SetActive(true);
-                }
-            }
-            else
-            {
-                gameVote.StartVote();
-            }
+            bool isLive = (bool)player.CustomProperties["IsLive"];
+            if (isLive)
+                voters.Add(player);
         }
+
     }
 
     // 찬성 버튼을 눌렀을 때
@@ -84,5 +72,10 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     void NoBtnRPC()
     {
         noCnt++;
+    }
+
+    void EndFunc()
+    {
+        
     }
 }

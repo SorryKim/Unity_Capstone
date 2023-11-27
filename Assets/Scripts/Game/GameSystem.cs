@@ -22,7 +22,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public GameObject themePanel, waitPanel, liarPanel, noLiarPanel, userListPanel, chatPanel, checkPanel, loadingPanel, settingPanel;
     public Button startBtn, settingBtn;
     public Text word;
-    public Player[] players;
     public TMP_Text roleCheckText, themeText1, themeText2;
     public int commentStartIdx;
     public int liarIdx;
@@ -30,6 +29,8 @@ public class GameSystem : MonoBehaviourPunCallbacks
     public Sprite[] playerImages;
     public RawImage liarimage;
     public Sprite[] liarImages;
+
+    public Player[] players;
 
 
 
@@ -121,19 +122,14 @@ public class GameSystem : MonoBehaviourPunCallbacks
             for (int i = 0; i < players.Length; i++)
             {
                 ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
+                customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
+                customProperties.Add("IsVote", false); // 투표에서 사용할 변수
+                customProperties.Add("IsLive", true); // 생존 여부
                 if (i == liarIdx)
-                {
-                    customProperties.Add("IsLiar", true); // 변경할 속성 추가
-                    customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
-                    customProperties.Add("IsVote", false); // 투표에서 사용할 변수
-                }
+                    customProperties.Add("IsLiar", true); // 변경할 속성 추가         
                 else
-                {
                     customProperties.Add("IsLiar", false); // 변경할 속성 추가
-                    customProperties.Add("VoteCount", 0); // 투표에서 사용할 변수
-                    customProperties.Add("IsVote", false); // 투표에서 사용할 변수
-                }
-
+              
                 // SetCustomProperties 메서드를 사용하여 커스텀 속성을 설정
                 players[i].SetCustomProperties(customProperties);
             }
@@ -198,10 +194,20 @@ public class GameSystem : MonoBehaviourPunCallbacks
     }
 
     // 제시어 확인 텍스트
-    public void SetCheckUI(bool isLiar)
+    public void SetCheckUI()
     {
-        if (isLiar) roleCheckText.text = "당신은 라이어";
-        else roleCheckText.text = "제시어: " + answer;
+        Player player = PhotonNetwork.LocalPlayer;
+        bool isLiar = (bool)player.CustomProperties["IsLiar"];
+        bool isLive = (bool)player.CustomProperties["IsLive"];
+
+        if (isLive) {
+            roleCheckText.text = "당신은 관전 상태입니다...";
+        }
+        else {
+            if (isLiar) roleCheckText.text = "당신은 라이어";
+            else roleCheckText.text = "제시어: " + answer;
+        }
+        
     }
 
 
@@ -216,11 +222,6 @@ public class GameSystem : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("IsLiar"))
         {
             isLiar = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLiar"];
-        }
-
-        foreach (Player player in PhotonNetwork.PlayerList)
-        {
-            Debug.Log(player.NickName + "의 라이어 여부: " + player.CustomProperties["IsLiar"] );
         }
 
         yield return new WaitForSeconds(2f);
@@ -245,22 +246,13 @@ public class GameSystem : MonoBehaviourPunCallbacks
         userListPanel.SetActive(true);
         chatPanel.SetActive(true);
         settingBtn.gameObject.SetActive(true);
-        SetCheckUI(isLiar);
+        SetCheckUI();
 
         // 코멘트시작!
         gameComment.CommentStart();
     }
 
-    // 설정
-    public void OnClickSettingOn()
-    {
-        settingPanel.SetActive(true);
-    }
-
-    public void onClickSettingOff()
-    {
-        settingPanel.SetActive(false);
-    }
+   
 
     #endregion
 

@@ -118,7 +118,7 @@ public class PlayerMovement : MonoBehaviourPun, IPunInstantiateMagicCallback
                 anim.SetBool("walk", false);
             }
 
-            Teleport();
+          
 
         }
         
