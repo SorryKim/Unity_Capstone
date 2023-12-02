@@ -14,6 +14,7 @@ using System;
 using System.Threading.Tasks;
 using Unity.Mathematics;
 using Random = System.Random;
+using Photon.Pun.UtilityScripts;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
@@ -40,10 +41,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
-            PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
-
-        // 현재 로컬유저의 Player 변수
-        RoomRenewal();
+            PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);     
 
     }
 
@@ -91,7 +89,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
    
 
-    void RoomRenewal()
+    public void RoomRenewal()
     {
         Photon.Realtime.Player currentPlayer = PhotonNetwork.LocalPlayer;
 
@@ -104,7 +102,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             GameStart.text = "Ready";
         }
         roomInfo.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "명";
-        //var players = PhotonNetwork.CurrentRoom.Players;
+
 
         foreach (var temp in userList)
         {
@@ -115,11 +113,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         Player[] playerArr = PhotonNetwork.PlayerList;
         foreach (var player in playerArr)
         {
-            player.Score = "0";
             if (player.IsMasterClient)
-                userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>" + "/ " + player.Score + "점";
+                userList[idx].text = "<color=green>[방장]" + player.NickName + "</color>" + " / " + player.GetScore().ToString() + "점";
             else
-                userList[idx].text = player.NickName + "/ " + player.Score + "점"; ;
+                userList[idx].text = player.NickName + " / " + player.GetScore().ToString() + "점"; ;
             idx++;
         }
     }

@@ -82,6 +82,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
     // 게임 시작버튼 누를 경우
     public void OnPressedStart()
     {
+        
         // 모든플레이어 스타트
         photonView.RPC("GameStart", RpcTarget.All);
     }
@@ -89,12 +90,13 @@ public class GameSystem : MonoBehaviourPunCallbacks
     [PunRPC]
     public void GameStart()
     {
+        gameManager.RoomRenewal();
         // 로딩창 띄움
         userListPanel.SetActive(false);
         chatPanel.SetActive(false);
         loadingPanel.SetActive(true);
         settingBtn.gameObject.SetActive(false);
-
+        checkPanel.SetActive(false);
         // 기본 설정 시작
         StartCoroutine(StartSetting());
 
@@ -200,7 +202,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
         bool isLiar = (bool)player.CustomProperties["IsLiar"];
         bool isLive = (bool)player.CustomProperties["IsLive"];
 
-        if (isLive) {
+        if (!isLive) {
             roleCheckText.text = "당신은 관전 상태입니다...";
         }
         else {

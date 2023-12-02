@@ -20,9 +20,9 @@ public class GameVote : MonoBehaviourPunCallbacks
     public bool isVoteStart;
     public float voteTime;
 
-    public RawImage[] player;
+    public RawImage[] images;
 
-    public Sprite[] players;
+    public Sprite[] sprites;
 
 
  
@@ -41,33 +41,29 @@ public class GameVote : MonoBehaviourPunCallbacks
     public void StartVote()
     {
         isVoteStart = false;
-        StartCoroutine(VoteSetting());
-       
+        StartCoroutine(VoteSetting()); 
     }
 
+    #region Vote 루틴
     IEnumerator VoteSetting()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            foreach(Player player in PhotonNetwork.PlayerList)
-            {
-                // 기존 CustomProperties를 가져옴
-                Hashtable customProperties = player.CustomProperties;
+        Player localPlayer = PhotonNetwork.LocalPlayer; // 다른 변수 이름을 사용하여 혼란을 방지합니다.
+                                                        // 기존 CustomProperties를 가져옴
+        Hashtable customProperties = localPlayer.CustomProperties;
 
-                // 업데이트된 값을 다시 CustomProperties에 저장
-                customProperties["VoteCount"] = 0;
-                customProperties["IsVote"] = false;
-                player.SetCustomProperties(customProperties);
-            }
-        }
+        // 업데이트된 값을 다시 CustomProperties에 저장
+        customProperties["VoteCount"] = 0;
+        customProperties["IsVote"] = false;
+        localPlayer.SetCustomProperties(customProperties);
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
         StartCoroutine(VoteRoutine());
     }
 
+
     private IEnumerator VoteRoutine() {
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         isVoteStart = true;
         // VotePanel 활성화
@@ -75,31 +71,31 @@ public class GameVote : MonoBehaviourPunCallbacks
         Player[] players = PhotonNetwork.PlayerList;
         for (int i = 0; i < players.Length; i++)
         {
-            string nickname = players[i].NickName;
-            // 다른 사람들의 투표공간
-            if (nickname != PhotonNetwork.LocalPlayer.NickName)
-            {
-                voteList[i].SetActive(true);
-                voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
-                voteList[i].transform.Find("Button").gameObject.SetActive(true);
+            bool b = (bool)players[i].CustomProperties["IsLive"];
+            if (b) {
+                string nickname = players[i].NickName;
+                // 다른 사람들의 투표공간
+                if (nickname != PhotonNetwork.LocalPlayer.NickName)
+                {
+                    voteList[i].SetActive(true);
+                    voteList[i].GetComponentInChildren<TMP_Text>().text = nickname;
+                    voteList[i].transform.Find("Button").gameObject.SetActive(true);
 
-                Texture2D playerTexture = GetPlayerTextureByActorNumber(players[i].ActorNumber);
-                voteList[i].GetComponentInChildren<RawImage>().texture = playerTexture;
+                    Texture2D playerTexture = GetPlayerTextureByActorNumber(players[i].ActorNumber);
+                    voteList[i].GetComponentInChildren<RawImage>().texture = playerTexture;
+                    Transform buttonTransform = voteList[i].transform.Find("Button");
+                    buttonTransform.GetComponent<Button>().onClick.AddListener(() => OnVoteClick(nickname));
+                }
+                // 자신의 공간일 경우 버튼칸은 비활성화인 상태로 생성
+                else
+                {
+                    voteList[i].SetActive(true);
+                    voteList[i].GetComponentInChildren<TMP_Text>().text = nickname;
+                    voteList[i].transform.Find("Button").gameObject.SetActive(false);
 
-
-                Transform buttonTransform = voteList[i].transform.Find("Button");
-                int idx = i;
-                buttonTransform.GetComponent<Button>().onClick.AddListener(() => OnVoteClick(players[idx].NickName));
-            }
-            // 자신의 공간일 경우 버튼칸은 비활성화인 상태로 생성
-            else
-            {
-                voteList[i].SetActive(true);
-                voteList[i].GetComponentInChildren<TMP_Text>().text = players[i].NickName;
-                voteList[i].transform.Find("Button").gameObject.SetActive(false);
-
-                Texture2D userTexture = GetPlayerTextureByActorNumber(PhotonNetwork.LocalPlayer.ActorNumber);
-                voteList[i].GetComponentInChildren<RawImage>().texture = userTexture;
+                    Texture2D userTexture = GetPlayerTextureByActorNumber(PhotonNetwork.LocalPlayer.ActorNumber);
+                    voteList[i].GetComponentInChildren<RawImage>().texture = userTexture;
+                }
             }
         }
 
@@ -110,33 +106,29 @@ public class GameVote : MonoBehaviourPunCallbacks
         votePanel.SetActive(false);
         EndVote();
     }
-    Texture2D GetPlayerTextureByActorNumber(int actorNumber)
-    {
-        int userIndex = (actorNumber- 1) % 8;
-        Sprite playerSprite = players[userIndex];
 
-        return SpriteToTexture(playerSprite);
-    }
-    Texture2D SpriteToTexture(Sprite sprite)
-    {
-        // Sprite를 Texture2D로 변환하는 코드
-        Texture2D texture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
-        texture.SetPixels(sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y,
-                          (int)sprite.rect.width, (int)sprite.rect.height));
-        texture.Apply();
-        return texture;
-    }
+
 
     public void OnVoteClick(string buttonNickName)
     {
-        foreach(Player player in PhotonNetwork.PlayerList) {
-            if(buttonNickName == player.NickName)
+        foreach (Button btn in voteButtons)
+            btn.gameObject.SetActive(false);
+
+        photonView.RPC("UpdateVoteCount", RpcTarget.All, buttonNickName);
+    }
+
+    [PunRPC]
+    void UpdateVoteCount(string playerName)
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (playerName == player.NickName)
             {
                 // 기존 CustomProperties를 가져옴
                 Hashtable customProperties = player.CustomProperties;
 
                 // "VoteCount" 키에 해당하는 값을 가져오고, 없으면 0으로 초기화
-                int voteCount = customProperties.ContainsKey("VoteCount") ? (int)customProperties["VoteCount"] : 0;
+                int voteCount = (int)customProperties["VoteCount"];
 
                 // VoteCount를 1 증가시킴
                 voteCount++;
@@ -147,18 +139,14 @@ public class GameVote : MonoBehaviourPunCallbacks
             }
         }
 
-        foreach(Button btn in voteButtons)
-        {
-            btn.gameObject.SetActive(false);
-        }
-
         Player temp = PhotonNetwork.LocalPlayer;
         Hashtable customProperty = temp.CustomProperties;
         // 업데이트된 값을 다시 CustomProperties에 저장
         customProperty["IsVote"] = true;
         temp.SetCustomProperties(customProperty);
-
+        UpdateVoteList();
     }
+
 
     void EndVote()
     {
@@ -218,7 +206,6 @@ public class GameVote : MonoBehaviourPunCallbacks
         reVotePanel.SetActive(false);
         // 투표 재시작
         StartVote();
-
     }
 
     [PunRPC]
@@ -227,8 +214,7 @@ public class GameVote : MonoBehaviourPunCallbacks
         gameLast.StartLast(player);
     }
 
-
-    void Update()
+    void UpdateVoteList()
     {
         if (isVoteStart)
         {
@@ -243,7 +229,7 @@ public class GameVote : MonoBehaviourPunCallbacks
                 bool isVote = (bool)player.CustomProperties["IsVote"];
 
                 Transform votersTransform = voteObject.transform.Find("voters");
-                
+                Debug.Log(player.NickName + "의 투표수: " + cnt);
                 // 투표한 경우 투표표시
                 if (isVote)
                     voteObject.transform.Find("Isvote").gameObject.SetActive(true);
@@ -252,19 +238,21 @@ public class GameVote : MonoBehaviourPunCallbacks
 
                 if (votersTransform != null)
                 {
-                    for(int j = 0; j < cnt; j++)
-                    {
-                        votersTransform.GetChild(j).gameObject.SetActive(true);
-                    }
-
-                    for(int j = cnt; j < 8; j++)
+                    // 업데이트 전에 "voters" 아래의 모든 자식 오브젝트를 재설정
+                    for (int j = 0; j < votersTransform.childCount; j++)
                     {
                         votersTransform.GetChild(j).gameObject.SetActive(false);
+                    }
+
+                    // 현재 투표 수에 따라 업데이트
+                    for (int j = 0; j < cnt; j++)
+                    {
+                        votersTransform.GetChild(j).gameObject.SetActive(true);
                     }
                 }
                 else
                 {
-                    Debug.LogError("voters not found under Player1!");
+                    Debug.LogError("Player1 아래에 voters를 찾을 수 없습니다!");
                 }
 
             }
@@ -272,6 +260,29 @@ public class GameVote : MonoBehaviourPunCallbacks
         }
     }
 
+    #endregion
+    void Update()
+    {
+        
+    }
 
+    #region 투표 이미지
+    Texture2D GetPlayerTextureByActorNumber(int actorNumber)
+    {
+        int userIndex = (actorNumber - 1) % 8;
+        Sprite playerSprite = sprites[userIndex];
+
+        return SpriteToTexture(playerSprite);
+    }
+    Texture2D SpriteToTexture(Sprite sprite)
+    {
+        // Sprite를 Texture2D로 변환하는 코드
+        Texture2D texture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+        texture.SetPixels(sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y,
+                          (int)sprite.rect.width, (int)sprite.rect.height));
+        texture.Apply();
+        return texture;
+    }
+    #endregion
 
 }
