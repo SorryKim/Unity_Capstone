@@ -118,6 +118,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         }
         else
         {
+
             gameVote.StartVote();
         }
     }

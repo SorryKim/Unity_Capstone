@@ -100,6 +100,22 @@ public class GameSystem : MonoBehaviourPunCallbacks
         // 기본 설정 시작
         StartCoroutine(StartSetting());
 
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        // 모든 플레이어에 대해 이동 명령 전송
+        foreach (GameObject player in players)
+        {
+            // 이동하고자 하는 위치 설정 (예: (0, 0, 0))
+            Vector3 targetPosition = new Vector3(0, 0, 0);
+
+            // 플레이어의 Transform 컴포넌트를 가져오기
+            Transform playerTransform = player.transform;
+
+            // 플레이어의 위치를 설정된 목표 위치로 이동
+            playerTransform.position = targetPosition;
+        }
+
+
         // 설정이 끝난 후 단어선택 창 띄움
         if (PhotonNetwork.IsMasterClient)
             themePanel.SetActive(true);
