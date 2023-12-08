@@ -23,7 +23,7 @@ public class GameVote : MonoBehaviourPunCallbacks
     public RawImage[] images;
 
     public Sprite[] sprites;
-
+    private bool isClick;
 
  
     private void Awake()
@@ -40,6 +40,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     public void StartVote()
     {
+        isClick = false;
         isVoteStart = false;
         StartCoroutine(VoteSetting()); 
     }
@@ -55,8 +56,10 @@ public class GameVote : MonoBehaviourPunCallbacks
         customProperties["IsVote"] = false;
         player.SetCustomProperties(customProperties);
 
+
         yield return new WaitForSeconds(2f);
 
+        Debug.Log("으악 변수초기화");
         StartCoroutine(VoteRoutine());
     }
 
@@ -68,9 +71,7 @@ public class GameVote : MonoBehaviourPunCallbacks
         // VotePanel 활성화
         votePanel.SetActive(true);
         Player[] players = PhotonNetwork.PlayerList;
-        foreach(Player player in players)
-            Debug.Log(player.NickName + "의 변수 상태 isVote: " + player.CustomProperties["IsVote"] + " VoteCount: " + player.CustomProperties["IsVote"]); 
-        
+  
         // voteList 처음에 초기화
         for(int i = 0; i < voteList.Length; i++)
             voteList[i].SetActive(false);
@@ -78,6 +79,10 @@ public class GameVote : MonoBehaviourPunCallbacks
        
         for (int i = 0; i < players.Length; i++)
         {
+            bool isLive = (bool)players[i].CustomProperties["IsLive"];
+            if (!isLive)
+                continue;
+
             string nickname = players[i].NickName;
             // 다른 사람들의 투표공간
             if (nickname != PhotonNetwork.LocalPlayer.NickName)
@@ -113,31 +118,35 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     public void OnVoteClick(string buttonNickName)
     {
-        Debug.Log(buttonNickName + "의 버튼이 클릭됨");
-        foreach (Button btn in voteButtons)
-            btn.gameObject.SetActive(false);
-
-        foreach (Player player in PhotonNetwork.PlayerList)
+        if (!isClick)
         {
-            if (buttonNickName == player.NickName)
+            Debug.Log(buttonNickName + "의 버튼이 클릭됨");
+            foreach (Button btn in voteButtons)
+                btn.gameObject.SetActive(false);
+
+            foreach (Player player in PhotonNetwork.PlayerList)
             {
-                // 기존 CustomProperties를 가져옴
-                Hashtable customProperties = player.CustomProperties;
-                int val = (int)customProperties["VoteCount"];
-                // 업데이트된 값을 다시 CustomProperties에 저장
-                customProperties["VoteCount"] = val + 1;
-                player.SetCustomProperties(customProperties);
-                
+                if (buttonNickName == player.NickName)
+                {
+                    // 기존 CustomProperties를 가져옴
+                    Hashtable customProperties = player.CustomProperties;
+                    int val = (int)customProperties["VoteCount"];
+                    // 업데이트된 값을 다시 CustomProperties에 저장
+                    customProperties["VoteCount"] = val + 1;
+                    player.SetCustomProperties(customProperties);
+
+                }
             }
+
+            Player temp = PhotonNetwork.LocalPlayer;
+            Hashtable customProperty = temp.CustomProperties;
+            // 업데이트된 값을 다시 CustomProperties에 저장
+            customProperty["IsVote"] = true;
+            temp.SetCustomProperties(customProperty);
+
+            photonView.RPC("UpdateVoteCount", RpcTarget.All);
+            isClick = true;
         }
-
-        Player temp = PhotonNetwork.LocalPlayer;
-        Hashtable customProperty = temp.CustomProperties;
-        // 업데이트된 값을 다시 CustomProperties에 저장
-        customProperty["IsVote"] = true;
-        temp.SetCustomProperties(customProperty);
-
-        photonView.RPC("UpdateVoteCount", RpcTarget.All);
     }
 
     [PunRPC]

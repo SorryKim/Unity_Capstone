@@ -80,13 +80,17 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         
         yield return new WaitForSeconds(lastVoteTime);
         lastVotePanel.SetActive(false);
+        
+        // 최종투표 결과
         if (yesCnt >= noCnt)
         {
+            // 라이어를 맞춘 경우
             if (isLiar)
             {
                 trueLiarPanel.SetActive(true);
                 if (PhotonNetwork.IsMasterClient)
                 {
+                    // 라이어가 아닌 사람들에게 1점 부과
                     foreach (Player player in PhotonNetwork.PlayerList)
                     {
                         if (candidate == player)
@@ -96,8 +100,8 @@ public class GameLastVote : MonoBehaviourPunCallbacks
                 }
                 yield return new WaitForSeconds(10f);
                 trueLiarPanel.SetActive(false);
-                gameSystem.GameStart();
             }
+            // 라이어가 아닌 경우
             else
             {
                 falseLiarPanel.SetActive(true);
@@ -105,21 +109,61 @@ public class GameLastVote : MonoBehaviourPunCallbacks
                 // 기존 CustomProperties를 가져옴
                 Hashtable customProperties = candidate.CustomProperties;
 
-                // 업데이트된 값을 다시 CustomProperties에 저장
+                // 탈락
                 customProperties["IsLive"] = false;
                 candidate.SetCustomProperties(customProperties);
                 yield return new WaitForSeconds(10f);
 
                 falseLiarPanel.SetActive(false);
-                gameVote.StartVote();
 
+                int temp = 0;
+                Player liar = null;
+                foreach(Player player in PhotonNetwork.PlayerList)
+                {
+                    bool isLive = (bool)player.CustomProperties["IsLive"];
+                    bool isLiar = (bool)player.CustomProperties["IsLiar"];
+                    if (isLive)
+                        temp++;
+
+                    if (isLiar)
+                        liar = player;
+                }
+
+                // 살아남은 사람이 2명인 경우
+                // 라이어의 승리
+                if (temp == 2)
+                {
+                    // 라이어 승리패널
+                    if (liar != null)
+                    {
+                        liar.AddScore(3);
+                    }
+                }
+                ScoreCheck();
             }
-            
         }
+        // 최종 투표가 불발된 경우
         else
         {
-
             gameVote.StartVote();
         }
+    }
+
+    // 플레이어의 점수를 확인하여 
+    void ScoreCheck()
+    {
+        Room room = PhotonNetwork.CurrentRoom;
+        int maxScore = (int)room.CustomProperties["MaxScore"];
+        foreach(Player player in PhotonNetwork.PlayerList)
+        {
+            int score = player.GetScore();
+            if(score >= maxScore)
+            {
+                // 해당 플레이어의 최종승리
+            }
+        }
+
+        // 최종승리자가 없는경우 게임 재시작
+        gameSystem.GameStart();
     }
 }

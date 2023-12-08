@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -17,11 +18,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     int playerCnt = 4; // 플레이어 수 설정
     int score = 1; // 점수 설정
-    int speakCnt = 1; // 발언 횟수 설정
+    
     string nickname = "", roomname = "";
     public GameObject startUI, nicknamePanel, createPanel, createRoomPanel, roomListPanel, manualPanel;
     public TMP_InputField nicknameInput, roomNameInput;
-    public TMP_Text playerCntText, scoreText, speakCntText;
+    public TMP_Text playerCntText, scoreText;
 
 
 
@@ -67,11 +68,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void ClickNextButtonCreateRoomPanel()
     {
         roomname = roomNameInput.text;
+        int maxScore = int.Parse(scoreText.text);
         RoomOptions roomOption = new RoomOptions();
         roomOption.IsOpen = true;
         roomOption.IsVisible = true;
         roomOption.MaxPlayers = playerCnt;
-
+        roomOption.CustomRoomProperties = new Hashtable();
+        roomOption.CustomRoomProperties.Add("MaxScore", maxScore);
         PhotonNetwork.CreateRoom(roomname, roomOption);
 
     }
@@ -242,22 +245,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void ClickAddSpeak()
-    {
-        if (speakCnt < 3)
-        {
-            speakCnt++;
-            speakCntText.text = speakCnt.ToString();
-        }
-    }
-
-    public void ClickMinusSpeak()
-    {
-        if (speakCnt > 1)
-        {
-            speakCnt--;
-            speakCntText.text = speakCnt.ToString();
-        }
-    }
+    
 
 }
