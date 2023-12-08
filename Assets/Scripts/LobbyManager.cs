@@ -17,7 +17,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private string gameVersion = "1"; // 게임버젼
 
     int playerCnt = 4; // 플레이어 수 설정
-    int score = 1; // 점수 설정
+    int score = 5; // 점수 설정
     
     string nickname = "", roomname = "";
     public GameObject startUI, nicknamePanel, createPanel, createRoomPanel, roomListPanel, manualPanel;
@@ -229,18 +229,18 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void ClickAddScore()
     {
-        if (score < 5)
+        if (score < 15)
         {
-            score++;
+            score += 5;
             scoreText.text = score.ToString();
         }
     }
 
     public void ClickMinusScore()
     {
-        if (score > 1)
+        if (score > 5)
         {
-            score--;
+            score -= 5;
             scoreText.text = score.ToString();
         }
     }

@@ -73,6 +73,10 @@ public class GameSystem : MonoBehaviourPunCallbacks
         }
         gameComment = GetComponent<GameComment>();
         gameManager = GetComponent<GameManager>();
+
+        Room room = PhotonNetwork.CurrentRoom;
+
+        Debug.Log("최대점수: " + room.CustomProperties["MaxScore"]);
         
     }
 

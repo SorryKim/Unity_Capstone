@@ -13,7 +13,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     public GameVote gameVote;
     public GameSystem gameSystem;
     public Button yesBtn, noBtn;
-    public GameObject trueLiarPanel, falseLiarPanel, lastVotePanel;
+    public GameObject trueLiarPanel, falseLiarPanel, lastVotePanel, liarWinPanel;
 
     public int yesCnt;
     public int noCnt;
@@ -136,7 +136,10 @@ public class GameLastVote : MonoBehaviourPunCallbacks
                     // 라이어 승리패널
                     if (liar != null)
                     {
+                        liarWinPanel.SetActive(true);
                         liar.AddScore(3);
+                        yield return new WaitForSeconds(10f);
+                        liarWinPanel.SetActive(false);
                     }
                 }
                 ScoreCheck();
