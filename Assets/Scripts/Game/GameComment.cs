@@ -44,10 +44,7 @@ public class GameComment : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            enterPressed = true;
-        }
+    
 
     }
     #region 순서대로 코멘트

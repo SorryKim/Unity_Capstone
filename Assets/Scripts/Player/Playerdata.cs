@@ -46,7 +46,7 @@ public class Playerdata : MonoBehaviour
             // 해당 플레이어의 PhotonView를 통해 현재 플레이어인지 확인 후 설정
             if (pv.IsMine)
             {
-                anim.SetBool("Dead", !isLive);
+                ActionRPC("GhostCharacter", null);
             }
         }
     }
@@ -66,5 +66,11 @@ public class Playerdata : MonoBehaviour
         {
             Debug.LogError("Invalid user index or character index.");
         }
+    }
+
+    [PunRPC]
+    void GhostCharacter()
+    {
+        anim.SetBool("Dead", !isLive);
     }
 }

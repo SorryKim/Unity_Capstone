@@ -159,6 +159,8 @@ public class GameLastVote : MonoBehaviourPunCallbacks
             }
             if(isEnd)
                 ScoreCheck();
+            else
+                gameVote.StartVote();
         }
         // 최종 투표가 불발된 경우
         else
@@ -187,6 +189,6 @@ public class GameLastVote : MonoBehaviourPunCallbacks
 
         // 최종승리자가 없는경우 게임 재시작
         if (!isEnd)
-            gameVote.StartVote();
+            gameSystem.GameStart();
     }
 }

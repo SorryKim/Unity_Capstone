@@ -59,7 +59,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 
         yield return new WaitForSeconds(2f);
 
-        Debug.Log("으악 변수초기화");
+        
         StartCoroutine(VoteRoutine());
     }
 
@@ -86,7 +86,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 
             string nickname = players[i].NickName;
             // 다른 사람들의 투표공간
-            if (nickname != PhotonNetwork.LocalPlayer.NickName)
+            if (nickname != PhotonNetwork.LocalPlayer.NickName && (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLive"])
             {
                 voteList[i].SetActive(true);
                 voteList[i].GetComponentInChildren<TMP_Text>().text = nickname;
@@ -221,20 +221,13 @@ public class GameVote : MonoBehaviourPunCallbacks
                 }
             }
 
-            if(list.Count >= 2)
+            if (list.Count >= 2)
             {
                 photonView.RPC("ReVoteRPC", RpcTarget.All);
-            }else if(list.Count == 1)
+            }
+            else if (list.Count == 1)
             {
-                int temp = (int)list[0].CustomProperties["VoteCount"];
-                if(temp >= players.Length / 2)
-                {
-                    photonView.RPC("GoLast", RpcTarget.All, list[0]);
-                }
-                else
-                {
-                    photonView.RPC("ReVoteRPC", RpcTarget.All);
-                }
+                photonView.RPC("GoLast", RpcTarget.All, list[0]);
             }
             else
             {

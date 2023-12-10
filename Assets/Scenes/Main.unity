@@ -28904,7 +28904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae60a0aeae83124b8c872a43944de02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  commentDuration: 30
+  commentDuration: 10
   commentWaitPanel: {fileID: 519748529}
   commentPanel: {fileID: 1507434640}
   commentInput: {fileID: 1827830125}
@@ -28932,7 +28932,7 @@ MonoBehaviour:
   targetLocation: {fileID: 1046529157}
   DiscussionPanel: {fileID: 1990880284}
   gameVote: {fileID: 0}
-  discussionSeconds: 60
+  discussionSeconds: 10
 --- !u!114 &1673597574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28957,6 +28957,7 @@ MonoBehaviour:
   - {fileID: 1617777696}
   votePanel: {fileID: 474463933}
   reVotePanel: {fileID: 1894947989}
+  checkUIpanel: {fileID: 1904916757}
   voteButtons:
   - {fileID: 1776632788}
   - {fileID: 407762160}
