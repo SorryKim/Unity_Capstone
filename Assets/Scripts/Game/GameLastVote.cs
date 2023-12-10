@@ -144,8 +144,9 @@ public class GameLastVote : MonoBehaviourPunCallbacks
                         liarWinPanel.SetActive(false);
                     }
                 }
-                ScoreCheck();
+                
             }
+            ScoreCheck();
         }
         // 최종 투표가 불발된 경우
         else

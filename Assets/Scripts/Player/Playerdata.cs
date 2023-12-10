@@ -44,7 +44,7 @@ public class Playerdata : MonoBehaviour
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsLive", out object isLiveValue))
         {
             isLive = (bool)isLiveValue;
-            anim.SetBool("Dead", isLive);
+            anim.SetBool("Dead", !isLive);
         }
     }
 
