@@ -13,6 +13,8 @@ public class Playerdata : MonoBehaviour
     Animator anim;
     public RuntimeAnimatorController[] animCon;
     public TMP_Text nickname;
+    public RuntimeAnimatorController ghostAnimCon;
+    private bool isLive;
 
     void ActionRPC(string functionName, object value)
     {
@@ -27,18 +29,32 @@ public class Playerdata : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        isLive = true;
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
         if (pv.IsMine)
-        {            
-            //캐릭터할당요청 & 서버에 전달
+        {
             ActionRPC("Character", PhotonNetwork.LocalPlayer.ActorNumber);
+            
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsLive", out object isLiveValue))
+        {
+            isLive = (bool)isLiveValue;
+
+            if (isLive && pv.IsMine)
+            {
+                ActionRPC("Character", PhotonNetwork.LocalPlayer.ActorNumber);
+            }
+            else if (!isLive && pv.IsMine)
+            {
+                ActionRPC("GhostCharacter", null);
+            }
+        }
     }
 
     [PunRPC]
@@ -56,5 +72,11 @@ public class Playerdata : MonoBehaviour
         {
             Debug.LogError("Invalid user index or character index.");
         }
+    }
+
+    [PunRPC]
+    void GhostCharacter()
+    {
+        anim.runtimeAnimatorController = ghostAnimCon;
     }
 }
