@@ -15,7 +15,7 @@ public class GameVote : MonoBehaviourPunCallbacks
     public static GameVote instance;
     public GameLast gameLast;
     public GameObject[] voteList;
-    public GameObject votePanel, reVotePanel;
+    public GameObject votePanel, reVotePanel, checkUIpanel;
     public Button[] voteButtons;
     public bool isVoteStart;
     public float voteTime;
@@ -70,6 +70,7 @@ public class GameVote : MonoBehaviourPunCallbacks
         isVoteStart = true;
         // VotePanel 활성화
         votePanel.SetActive(true);
+        checkUIpanel.SetActive(false);
         Player[] players = PhotonNetwork.PlayerList;
   
         // voteList 처음에 초기화
@@ -197,6 +198,7 @@ public class GameVote : MonoBehaviourPunCallbacks
 
     void EndVote()
     {
+        checkUIpanel.SetActive(true);
         votePanel.SetActive(false);
         Player[] players = PhotonNetwork.PlayerList;
         List<Player> list = new List<Player> ();

@@ -1,6 +1,5 @@
 using Cinemachine;
 using Photon.Pun;
-using Photon.Pun.Demo.Cockpit;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -25,6 +24,7 @@ public class Playerdata : MonoBehaviour
         anim = GetComponent<Animator>();
         pv = GetComponent<PhotonView>();
     }
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -33,25 +33,28 @@ public class Playerdata : MonoBehaviour
         if (pv.IsMine)
         {
             ActionRPC("Character", PhotonNetwork.LocalPlayer.ActorNumber);
-            
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsLive", out object isLiveValue))
         {
             isLive = (bool)isLiveValue;
-            anim.SetBool("Dead", !isLive);
+
+            // 해당 플레이어의 PhotonView를 통해 현재 플레이어인지 확인 후 설정
+            if (pv.IsMine)
+            {
+                anim.SetBool("Dead", !isLive);
+            }
         }
     }
 
     [PunRPC]
     void Character(int actorNumber)
     {
-        int userIndex = (actorNumber - 1) % 8; //0~7, actornumber가 8이 되면 다시 0부터
+        int userIndex = (actorNumber - 1) % 8; // 0~7, actornumber가 8이 되면 다시 0부터
 
         if (userIndex >= 0 && userIndex < animCon.Length)
         {
@@ -64,5 +67,4 @@ public class Playerdata : MonoBehaviour
             Debug.LogError("Invalid user index or character index.");
         }
     }
-
 }
