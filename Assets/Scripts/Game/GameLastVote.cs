@@ -26,6 +26,18 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     private float lastVoteTime;
     public List<Player> voters;
 
+    //최종투표 이미지 배열
+    public Sprite[] player_images;
+    public Sprite[] liar_images;
+
+    //최종투표
+    public Image player_image;
+    public Image liar_image;
+
+    //결과화면
+    public RawImage re_liarimage;
+    public RawImage re_playerimage;
+
 
     void Start()
     {
@@ -38,8 +50,16 @@ public class GameLastVote : MonoBehaviourPunCallbacks
 
     public void StartLastVote(Player candidate)
     {
+        int userIndex = (candidate.ActorNumber - 1) % 8; // 0~7, actornumber가 8이 되면 다시 0부터
+
+        player_image.sprite = player_images[userIndex];
+        liar_image.sprite = liar_images[userIndex];
         isEnd = false;
         isLiar = (bool)candidate.CustomProperties["IsLiar"];
+
+        re_liarimage = gameSystem.ConvertSpriteToRawImage(gameSystem.liarImages[userIndex]);
+        re_playerimage = gameSystem.ConvertSpriteToRawImage(gameSystem.playerImages[userIndex]);
+
         falseText.text = candidate.NickName + "님은 <color=red>라이어</color>가 아닙니다.";
         trueText.text = candidate.NickName + "님은 <color=red>라이어</color>가 맞습니다.";
         yesBtn.gameObject.SetActive(true);
@@ -142,7 +162,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
                     if (liar != null)
                     {
                         isEnd = true;
-                        liarWinText.text = liar.NickName + "님이 <color=red>라이어</color>입니다!olor=red>라이어의 승리</color>";
+                        liarWinText.text = liar.NickName + "님이 <color=red>라이어</color>입니다!";
                         liarWinPanel.SetActive(true);
                         liar.AddScore(3);
                         yield return new WaitForSeconds(10f);

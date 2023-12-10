@@ -278,7 +278,7 @@ public class GameSystem : MonoBehaviourPunCallbacks
 
     #endregion
 
-    private Texture2D SpriteToTexture(Sprite sprite)
+    public Texture2D SpriteToTexture(Sprite sprite)
     {
         Texture2D texture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
         texture.SetPixels(sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y,
@@ -286,5 +286,18 @@ public class GameSystem : MonoBehaviourPunCallbacks
         texture.Apply();
         return texture;
     }
+    // Sprite를 RawImage로 변환하여 반환하는 함수
+    public RawImage ConvertSpriteToRawImage(Sprite sprite)
+    {
+        // RawImage에 적용할 Texture2D 생성
+        Texture2D rawTexture = SpriteToTexture(sprite);
 
+        // RawImage 생성 및 Texture2D 적용
+        RawImage rawImage = new GameObject("RawImage").AddComponent<RawImage>();
+        rawImage.texture = rawTexture;
+
+        return rawImage;
+    }
+
+   
 }
