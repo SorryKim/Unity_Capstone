@@ -41,19 +41,20 @@ public class Playerdata : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PhotonNetwork.LocalPlayer.CustomProperties["IsLive"] != null)
-            isLive = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLive"];
 
-
-        if (isLive && pv.IsMine)
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsLive", out object isLiveValue))
         {
-            ActionRPC("Character", PhotonNetwork.LocalPlayer.ActorNumber);
-        }
-        else if (!isLive && pv.IsMine)
-        {
-            ActionRPC("GhostCharacter", null);
-        }
+            isLive = (bool)isLiveValue;
 
+            if (isLive && pv.IsMine)
+            {
+                ActionRPC("Character", PhotonNetwork.LocalPlayer.ActorNumber);
+            }
+            else if (!isLive && pv.IsMine)
+            {
+                ActionRPC("GhostCharacter", null);
+            }
+        }
     }
 
     [PunRPC]
