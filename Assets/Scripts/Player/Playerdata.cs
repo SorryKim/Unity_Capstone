@@ -13,7 +13,6 @@ public class Playerdata : MonoBehaviour
     Animator anim;
     public RuntimeAnimatorController[] animCon;
     public TMP_Text nickname;
-    public RuntimeAnimatorController ghostAnimCon;
     private bool isLive;
 
     void ActionRPC(string functionName, object value)
@@ -45,15 +44,7 @@ public class Playerdata : MonoBehaviour
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsLive", out object isLiveValue))
         {
             isLive = (bool)isLiveValue;
-
-            if (isLive && pv.IsMine)
-            {
-                ActionRPC("Character", PhotonNetwork.LocalPlayer.ActorNumber);
-            }
-            else if (!isLive && pv.IsMine)
-            {
-                ActionRPC("GhostCharacter", null);
-            }
+            anim.SetBool("Dead", isLive);
         }
     }
 
@@ -74,9 +65,4 @@ public class Playerdata : MonoBehaviour
         }
     }
 
-    [PunRPC]
-    void GhostCharacter()
-    {
-        anim.runtimeAnimatorController = ghostAnimCon;
-    }
 }

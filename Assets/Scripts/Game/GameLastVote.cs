@@ -7,17 +7,19 @@ using UnityEngine.UI;
 using Photon.Pun.UtilityScripts;
 
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using TMPro;
 
 public class GameLastVote : MonoBehaviourPunCallbacks
 {
     public GameVote gameVote;
     public GameSystem gameSystem;
     public Button yesBtn, noBtn;
-    public GameObject trueLiarPanel, falseLiarPanel, lastVotePanel, liarWinPanel;
+    public GameObject trueLiarPanel, falseLiarPanel, lastVotePanel, liarWinPanel, winnerPanel;
 
     public int yesCnt;
     public int noCnt;
     public Text trueText, falseText;
+    public TMP_Text winnerName;
 
     private bool isLiar;
     private bool isEnd;
@@ -155,6 +157,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     // 플레이어의 점수를 확인하여 
     void ScoreCheck()
     {
+        bool isEnd = false;
         Room room = PhotonNetwork.CurrentRoom;
         int maxScore = (int)room.CustomProperties["MaxScore"];
         foreach(Player player in PhotonNetwork.PlayerList)
@@ -162,11 +165,14 @@ public class GameLastVote : MonoBehaviourPunCallbacks
             int score = player.GetScore();
             if(score >= maxScore)
             {
-                // 해당 플레이어의 최종승리
+                winnerName.text = player.NickName + "님이 최종승리하셨습니다~!";
+                winnerPanel.SetActive(true);
+                isEnd = true;
             }
         }
 
         // 최종승리자가 없는경우 게임 재시작
-        gameSystem.GameStart();
+        if(!isEnd)
+            gameSystem.GameStart();
     }
 }
