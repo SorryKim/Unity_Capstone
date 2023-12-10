@@ -18,8 +18,8 @@ public class GameLastVote : MonoBehaviourPunCallbacks
 
     public int yesCnt;
     public int noCnt;
-    public Text trueText, falseText;
-    public TMP_Text winnerName, liarWinText;
+    public Text trueText, falseText, liarWinText;
+    public TMP_Text winnerName;
 
     private bool isLiar;
     private bool isEnd;

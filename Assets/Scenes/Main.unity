@@ -29030,8 +29030,8 @@ MonoBehaviour:
   noCnt: 0
   trueText: {fileID: 942495298}
   falseText: {fileID: 1950156147}
+  liarWinText: {fileID: 785028037}
   winnerName: {fileID: 2071407472}
-  liarWinText: {fileID: 0}
 --- !u!1 &1678983710
 GameObject:
   m_ObjectHideFlags: 0

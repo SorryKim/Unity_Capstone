@@ -12,7 +12,7 @@ public class Playerdata : MonoBehaviour
     Animator anim;
     public RuntimeAnimatorController[] animCon;
     public TMP_Text nickname;
-    private bool isLive;
+
 
     void ActionRPC(string functionName, object value)
     {
@@ -28,7 +28,7 @@ public class Playerdata : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        isLive = true;
+ 
         nickname.text = pv.IsMine ? PhotonNetwork.NickName : pv.Owner.NickName;
         if (pv.IsMine)
         {
@@ -41,12 +41,12 @@ public class Playerdata : MonoBehaviour
     {
         if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsLive", out object isLiveValue))
         {
-            isLive = (bool)isLiveValue;
+            bool isLive = (bool)isLiveValue;
 
             // 해당 플레이어의 PhotonView를 통해 현재 플레이어인지 확인 후 설정
             if (pv.IsMine)
             {
-                ActionRPC("GhostCharacter", null);
+                ActionRPC("GhostCharacter", isLive);
             }
         }
     }
@@ -69,8 +69,8 @@ public class Playerdata : MonoBehaviour
     }
 
     [PunRPC]
-    void GhostCharacter()
+    void GhostCharacter(bool b)
     {
-        anim.SetBool("Dead", !isLive);
+        anim.SetBool("Dead", !b);
     }
 }
