@@ -19,13 +19,13 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     public int yesCnt;
     public int noCnt;
     public Text trueText, falseText;
-    public TMP_Text winnerName;
+    public TMP_Text winnerName, liarWinText;
 
     private bool isLiar;
     private bool isEnd;
     private float lastVoteTime;
     public List<Player> voters;
-    
+
 
     void Start()
     {
@@ -44,13 +44,13 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         trueText.text = candidate.NickName + "님은 <color=red>라이어</color>가 맞습니다.";
         yesBtn.gameObject.SetActive(true);
         noBtn.gameObject.SetActive(true);
-        StartCoroutine(LastVote(candidate));    
+        StartCoroutine(LastVote(candidate));
     }
 
     // 찬성 버튼을 눌렀을 때
     public void OnClickYesBtn()
     {
-        photonView.RPC("YesBtnRPC",RpcTarget.All);
+        photonView.RPC("YesBtnRPC", RpcTarget.All);
         yesBtn.gameObject.SetActive(false);
         noBtn.gameObject.SetActive(false);
     }
@@ -62,7 +62,8 @@ public class GameLastVote : MonoBehaviourPunCallbacks
     }
 
     // 반대 버튼을 눌렀을 때
-    public void OnClickNoBtn() {
+    public void OnClickNoBtn()
+    {
         photonView.RPC("NoBtnRPC", RpcTarget.All);
         yesBtn.gameObject.SetActive(false);
         noBtn.gameObject.SetActive(false);
@@ -79,10 +80,10 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         bool b = (bool)PhotonNetwork.LocalPlayer.CustomProperties["IsLive"];
         if (b)
             lastVotePanel.SetActive(true);
-        
+
         yield return new WaitForSeconds(lastVoteTime);
         lastVotePanel.SetActive(false);
-        
+
         // 최종투표 결과
         if (yesCnt >= noCnt)
         {
@@ -120,7 +121,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
 
                 int temp = 0;
                 Player liar = null;
-                foreach(Player player in PhotonNetwork.PlayerList)
+                foreach (Player player in PhotonNetwork.PlayerList)
                 {
                     bool isLive = (bool)player.CustomProperties["IsLive"];
                     bool isLiar = (bool)player.CustomProperties["IsLiar"];
@@ -138,13 +139,14 @@ public class GameLastVote : MonoBehaviourPunCallbacks
                     // 라이어 승리패널
                     if (liar != null)
                     {
+                        liarWinText.text = liar.NickName + "님이 <color=red>라이어</color>입니다!olor=red>라이어의 승리</color>";
                         liarWinPanel.SetActive(true);
                         liar.AddScore(3);
                         yield return new WaitForSeconds(10f);
                         liarWinPanel.SetActive(false);
                     }
                 }
-                
+
             }
             ScoreCheck();
         }
@@ -161,10 +163,10 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         bool isEnd = false;
         Room room = PhotonNetwork.CurrentRoom;
         int maxScore = (int)room.CustomProperties["MaxScore"];
-        foreach(Player player in PhotonNetwork.PlayerList)
+        foreach (Player player in PhotonNetwork.PlayerList)
         {
             int score = player.GetScore();
-            if(score >= maxScore)
+            if (score >= maxScore)
             {
                 winnerName.text = player.NickName + "님이 최종승리하셨습니다~!";
                 winnerPanel.SetActive(true);
@@ -173,7 +175,7 @@ public class GameLastVote : MonoBehaviourPunCallbacks
         }
 
         // 최종승리자가 없는경우 게임 재시작
-        if(!isEnd)
+        if (!isEnd)
             gameSystem.GameStart();
     }
 }

@@ -41,8 +41,9 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Start()
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount <= 1)
-            PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);     
+            PhotonNetwork.Instantiate("Player", new Vector3(0, 0, -1), Quaternion.identity, 0);
 
+        RoomRenewal();
     }
 
     private void Update()
