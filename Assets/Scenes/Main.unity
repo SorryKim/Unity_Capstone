@@ -29030,6 +29030,7 @@ MonoBehaviour:
   trueText: {fileID: 942495298}
   falseText: {fileID: 1950156147}
   winnerName: {fileID: 2071407472}
+  liarWinText: {fileID: 0}
 --- !u!1 &1678983710
 GameObject:
   m_ObjectHideFlags: 0
